@@ -366,7 +366,7 @@ function expPDF(){
   var W=doc.internal.pageSize.getWidth();
   doc.setFillColor(26,111,196);doc.rect(0,0,W,20,"F");
   doc.setTextColor(255,255,255);doc.setFontSize(13);doc.setFont("helvetica","bold");
-  doc.text("REGISTRO DE CRAVACAO DE ESTACAS - PDA",W/2,8,{align:"center"});
+  doc.text("REGISTRO DE CAMPO METODO CASE - PDA",W/2,8,{align:"center"});
   doc.setFontSize(9);doc.setFont("helvetica","normal");
   var l2=[(dados.projeto||"—"),(dados.cidade?"| "+dados.cidade:""),"| Estaca: "+(dados.estaca||"—"),"| "+dados.tipo,"| "+dados.data+" "+dados.hora].filter(Boolean).join(" ");
   doc.text(l2,W/2,14,{align:"center"});
