@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PDA App">
+<meta name="theme-color" content="#1A6FC4">
+<title>Registro PDA</title>
+<link rel="manifest" id="manifest-placeholder">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#f5f5f0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px}
+.app{max-width:480px;margin:0 auto;padding:1rem;padding-bottom:2rem}
+.screen{display:none}.screen.active{display:block}
+.card{background:#fff;border:1px solid #e5e5e0;border-radius:14px;padding:1.25rem;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.header{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
+.hicon{width:38px;height:38px;border-radius:10px;background:#1A6FC4;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hicon svg{display:block}
+.header h2{font-size:17px;font-weight:600;color:#111}
+.header p{font-size:12px;color:#888}
+label{display:block;font-size:13px;color:#666;margin-bottom:4px;margin-top:12px}
+label:first-of-type{margin-top:0}
+input,select{width:100%;font-size:16px;padding:10px 12px;border:1px solid #ddd;border-radius:10px;background:#f9f9f7;color:#111;-webkit-appearance:none;appearance:none}
+input:focus,select:focus{outline:none;border-color:#1A6FC4;background:#fff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.btn{width:100%;padding:13px;border-radius:12px;border:none;font-size:16px;font-weight:600;cursor:pointer;margin-top:12px}
+.btn-primary{background:#1A6FC4;color:#fff}
+.btn-secondary{background:#f0f0ed;color:#333;border:1px solid #ddd}
+.btn-excel{background:#217346;color:#fff}
+.btn-pdf{background:#C0392B;color:#fff}
+.hint{font-size:11px;color:#aaa;margin-top:3px}
+.sep{display:flex;align-items:center;gap:8px;margin:14px 0 4px;font-size:12px;color:#bbb}
+.sep::before,.sep::after{content:'';flex:1;height:1px;background:#eee}
+.step-bar{display:flex;gap:5px;margin-bottom:1.25rem}
+.step{flex:1;height:4px;border-radius:2px;background:#e5e5e0}
+.step.done{background:#1A6FC4}.step.active{background:#6BA8E5}
+.golpe-item{background:#f9f9f7;border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;border:1px solid #eee}
+.golpe-num{font-size:13px;font-weight:600;color:#888}
+.golpe-info{font-size:13px;color:#333}
+.del-btn{font-size:13px;color:#E24B4A;cursor:pointer;border:none;background:none;padding:4px 8px;font-weight:600}
+.sum-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid #f0f0ed}
+.sum-row:last-child{border-bottom:none}
+.sum-lbl{color:#888}.sum-val{font-weight:600;color:#111}
+.picker-wrap{position:relative;margin-top:4px}
+.picker-search{width:100%;font-size:16px;padding:10px 12px;border:1px solid #ddd;border-radius:10px;background:#f9f9f7;color:#111}
+.picker-search:focus{outline:none;border-color:#1A6FC4;background:#fff}
+.picker-list{max-height:220px;overflow-y:auto;border:1px solid #ddd;border-radius:10px;background:#fff;margin-top:4px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.picker-item{padding:11px 14px;font-size:14px;cursor:pointer;color:#111;border-bottom:1px solid #f5f5f0}
+.picker-item:last-child{border-bottom:none}
+.picker-item:active{background:#f0f0ed}
+.picker-item.selected{background:#E1F5EE;color:#085041;font-weight:600}
+.picker-selected{margin-top:6px;padding:8px 12px;background:#E1F5EE;border-radius:10px;font-size:13px;color:#085041;font-weight:600;display:none}
+.badge-dims{margin-top:8px;padding:9px 12px;background:#f5f5f0;border-radius:10px;font-size:13px;color:#666;display:none;flex-wrap:wrap;gap:4px 12px;border:1px solid #e5e5e0}
+.badge-dims b{color:#111}
+.offline-banner{background:#E1F5EE;border-radius:10px;padding:10px 14px;margin-bottom:1rem;font-size:13px;color:#085041;display:none}
+#status-bar{position:fixed;top:0;left:0;right:0;text-align:center;font-size:12px;padding:4px;z-index:1000;display:none}
+#status-bar.offline{background:#C0392B;color:#fff;display:block}
+#status-bar.online{background:#1A6FC4;color:#fff;display:block}
+</style>
+</head>
+<body>
+
+<div id="status-bar"></div>
+
+<div class="app">
+
+<div class="screen active" id="s1">
+  <div class="step-bar"><div class="step active"></div><div class="step"></div><div class="step"></div><div class="step"></div></div>
+  <div class="card">
+    <div class="header">
+      <div class="hicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/></svg></div>
+      <div><h2>Informações do projeto</h2><p>Passo 1 de 4</p></div>
+    </div>
+    <label>Nome do projeto</label><input type="text" id="in_projeto" autocomplete="off">
+    <label>Cidade</label><input type="text" id="in_cidade" autocomplete="off">
+    <label>Nome da estaca</label><input type="text" id="in_estaca" autocomplete="off">
+    <label>Data do serviço</label>
+    <div class="row3"><select id="in_dia"></select><select id="in_mes"></select><select id="in_ano"></select></div>
+    <label>Hora do serviço</label>
+    <div class="row"><select id="in_hora"></select><select id="in_min"></select></div>
+    <button class="btn btn-primary" onclick="irParaS2()">Continuar →</button>
+  </div>
+</div>
+
+<div class="screen" id="s2">
+  <div class="step-bar"><div class="step done"></div><div class="step active"></div><div class="step"></div><div class="step"></div></div>
+  <div class="card">
+    <div class="header">
+      <div class="hicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg></div>
+      <div><h2>Tipo de estaca</h2><p>Passo 2 de 4</p></div>
+    </div>
+    <label>Tipo de estaca</label>
+    <select id="in_tipo" onchange="onTipoChange()">
+      <option>Hélice Contínua</option><option>Metálica</option>
+      <option>Pré-Moldada de Concreto</option><option>Raiz</option>
+      <option>Trado Mecanizado</option><option>Trilho</option><option>Tubulão</option>
+    </select>
+    <div id="bloco_circ">
+      <label>Diâmetro (cm)</label><input type="number" id="in_diam" inputmode="decimal" oninput="calcCirc()">
+      <div id="bdg_circ" class="badge-dims"></div>
+    </div>
+    <div id="bloco_met" style="display:none">
+      <label>Buscar perfil da tabela</label>
+      <div class="picker-wrap">
+        <input class="picker-search" id="srch_met" placeholder="Digite para filtrar..." oninput="filtrarLista('met')" onfocus="abrirLista('met')">
+        <div class="picker-list" id="list_met" style="display:none"></div>
+      </div>
+      <div id="sel_met_nome" class="picker-selected"></div>
+      <div id="bdg_met" class="badge-dims"></div>
+      <div class="sep">ou preencher manualmente</div>
+      <div class="row"><div><label>d (mm)</label><input type="number" inputmode="decimal" id="m_d"></div><div><label>bf (mm)</label><input type="number" inputmode="decimal" id="m_bf"></div></div>
+      <div class="row"><div><label>tw (mm)</label><input type="number" inputmode="decimal" id="m_tw"></div><div><label>tf (mm)</label><input type="number" inputmode="decimal" id="m_tf"></div></div>
+      <div class="row"><div><label>h (mm)</label><input type="number" inputmode="decimal" id="m_h"></div><div><label>Massa linear (kg/m)</label><input type="number" inputmode="decimal" id="m_massa"></div></div>
+      <div class="row"><div><label>Área (cm²)</label><input type="number" inputmode="decimal" id="m_area"></div><div><label>Perímetro (cm)</label><input type="number" inputmode="decimal" id="m_perim"></div></div>
+    </div>
+    <div id="bloco_tri" style="display:none">
+      <label>Buscar trilho da tabela</label>
+      <div class="picker-wrap">
+        <input class="picker-search" id="srch_tri" placeholder="Digite para filtrar..." oninput="filtrarLista('tri')" onfocus="abrirLista('tri')">
+        <div class="picker-list" id="list_tri" style="display:none"></div>
+      </div>
+      <div id="sel_tri_nome" class="picker-selected"></div>
+      <div id="bdg_tri" class="badge-dims"></div>
+      <div class="sep">ou preencher manualmente</div>
+      <div class="row"><div><label>Área (cm²)</label><input type="number" inputmode="decimal" id="t_area"></div><div><label>Perímetro (cm)</label><input type="number" inputmode="decimal" id="t_perim"></div></div>
+      <label>Massa linear (kg/m)</label><input type="number" inputmode="decimal" id="t_massa">
+    </div>
+    <div id="bloco_pre" style="display:none">
+      <label>Buscar perfil da tabela</label>
+      <div class="picker-wrap">
+        <input class="picker-search" id="srch_pre" placeholder="Digite para filtrar..." oninput="filtrarLista('pre')" onfocus="abrirLista('pre')">
+        <div class="picker-list" id="list_pre" style="display:none"></div>
+      </div>
+      <div id="sel_pre_nome" class="picker-selected"></div>
+      <div id="bdg_pre" class="badge-dims"></div>
+      <div class="sep">ou preencher manualmente</div>
+      <div class="row"><div><label>D externo (cm)</label><input type="number" inputmode="decimal" id="p_dext"></div><div><label>D interno (cm)</label><input type="number" inputmode="decimal" id="p_dint"></div></div>
+      <div class="row"><div><label>Área (cm²)</label><input type="number" inputmode="decimal" id="p_area"></div><div><label>Perímetro (cm)</label><input type="number" inputmode="decimal" id="p_perim"></div></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-secondary" onclick="irPara('s1')" style="flex:1;margin-top:0">← Voltar</button>
+      <button class="btn btn-primary" onclick="irParaGolpes()" style="flex:2;margin-top:0">Continuar →</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="s3">
+  <div class="step-bar"><div class="step done"></div><div class="step done"></div><div class="step active"></div><div class="step"></div></div>
+  <div class="card">
+    <div class="header">
+      <div class="hicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div><h2>Registrar golpe</h2><p id="golpe_ctr">Passo 3 de 4 · Golpe 1</p></div>
+    </div>
+    <label>Comprimento útil (m)</label><input type="number" inputmode="decimal" id="in_comp">
+    <div class="row">
+      <div><label>Carga de trabalho (tf)</label><input type="number" inputmode="decimal" id="in_carga" oninput="calcEnsaio()"></div>
+      <div><label>Carga de ensaio (tf)</label><input type="number" inputmode="decimal" id="in_cens"><div class="hint">Auto: 2× trabalho</div></div>
+    </div>
+    <div class="row">
+      <div><label>Altura do golpe (cm)</label><input type="number" inputmode="decimal" id="in_alt"></div>
+      <div><label>Nega (mm)</label><input type="number" inputmode="decimal" id="in_nega"></div>
+    </div>
+    <div class="row">
+      <div><label>EMX (tn.m)</label><input type="number" inputmode="decimal" id="in_emx"></div>
+      <div><label>RMX (tn)</label><input type="number" inputmode="decimal" id="in_rmx"></div>
+    </div>
+    <label>DMX (mm)</label><input type="number" inputmode="decimal" id="in_dmx">
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-secondary" onclick="irPara('s2')" style="flex:1;margin-top:0">← Voltar</button>
+      <button class="btn btn-primary" onclick="addGolpe()" style="flex:2;margin-top:0">+ Adicionar golpe</button>
+    </div>
+    <button class="btn btn-secondary" onclick="irParaResumo()" style="margin-top:8px">Ver resumo →</button>
+  </div>
+</div>
+
+<div class="screen" id="s4">
+  <div class="step-bar"><div class="step done"></div><div class="step done"></div><div class="step done"></div><div class="step active"></div></div>
+  <div class="card">
+    <div class="header">
+      <div class="hicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><h2 id="res_titulo">Resumo</h2><p id="res_sub"></p></div>
+    </div>
+    <div id="res_dados"></div>
+    <div style="margin:1rem 0 .5rem;font-size:13px;font-weight:600;color:#888">Golpes registrados</div>
+    <div id="res_golpes"></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-excel" onclick="expXLSX()" style="flex:1;margin-top:0">⬇ Excel</button>
+      <button class="btn btn-pdf" onclick="expPDF()" style="flex:1;margin-top:0">⬇ PDF</button>
+    </div>
+    <button class="btn btn-secondary" onclick="novoReg()" style="margin-top:8px">+ Novo registro</button>
+  </div>
+</div>
+
+</div>
+
+<!-- XLSX library inline -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+// ===== DADOS =====
+var MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+var MET=[{"nome":"HP 200 x 53,0 (H)","massa":53,"d_mm":204,"bf_mm":207,"tw_mm":11.3,"tf_mm":11.3,"h_mm":181,"area_cm2":68.1,"perimetro_cm":120},{"nome":"HP 250 x 62,0 (H)","massa":62,"d_mm":246,"bf_mm":256,"tw_mm":10.5,"tf_mm":10.7,"h_mm":225,"area_cm2":79.6,"perimetro_cm":147},{"nome":"HP 250 x 85,0 (H)","massa":85,"d_mm":254,"bf_mm":260,"tw_mm":14.4,"tf_mm":14.4,"h_mm":225,"area_cm2":108.5,"perimetro_cm":150},{"nome":"HP 310 x 110,0 (H)","massa":110,"d_mm":308,"bf_mm":310,"tw_mm":15.4,"tf_mm":15.5,"h_mm":277,"area_cm2":141,"perimetro_cm":180},{"nome":"HP 310 x 125,0 (H)","massa":125,"d_mm":312,"bf_mm":312,"tw_mm":17.4,"tf_mm":17.4,"h_mm":277,"area_cm2":159,"perimetro_cm":181},{"nome":"HP 310 x 79,0 (H)","massa":79,"d_mm":299,"bf_mm":306,"tw_mm":11,"tf_mm":11,"h_mm":277,"area_cm2":100,"perimetro_cm":177},{"nome":"HP 310 x 93,0 (H)","massa":93,"d_mm":303,"bf_mm":308,"tw_mm":13.1,"tf_mm":13.1,"h_mm":277,"area_cm2":119.2,"perimetro_cm":178},{"nome":"W 150 x 13,0","massa":13,"d_mm":148,"bf_mm":100,"tw_mm":4.3,"tf_mm":4.9,"h_mm":138,"area_cm2":16.6,"perimetro_cm":67},{"nome":"W 150 x 18,0","massa":18,"d_mm":153,"bf_mm":102,"tw_mm":5.8,"tf_mm":7.1,"h_mm":139,"area_cm2":23.4,"perimetro_cm":69},{"nome":"W 150 x 22,5 (H)","massa":22.5,"d_mm":152,"bf_mm":152,"tw_mm":5.8,"tf_mm":6.6,"h_mm":139,"area_cm2":29,"perimetro_cm":88},{"nome":"W 150 x 24,0","massa":24,"d_mm":160,"bf_mm":102,"tw_mm":6.6,"tf_mm":10.3,"h_mm":139,"area_cm2":31.5,"perimetro_cm":69},{"nome":"W 150 x 29,8 (H)","massa":29.8,"d_mm":157,"bf_mm":153,"tw_mm":6.6,"tf_mm":9.3,"h_mm":138,"area_cm2":38.5,"perimetro_cm":90},{"nome":"W 150 x 37,1 (H)","massa":37.1,"d_mm":162,"bf_mm":154,"tw_mm":8.1,"tf_mm":11.6,"h_mm":139,"area_cm2":47.8,"perimetro_cm":91},{"nome":"W 200 x 15,0","massa":15,"d_mm":200,"bf_mm":100,"tw_mm":4.3,"tf_mm":5.2,"h_mm":190,"area_cm2":19.4,"perimetro_cm":77},{"nome":"W 200 x 19,3","massa":19.3,"d_mm":203,"bf_mm":102,"tw_mm":5.8,"tf_mm":6.5,"h_mm":190,"area_cm2":25.1,"perimetro_cm":79},{"nome":"W 200 x 22,5","massa":22.5,"d_mm":206,"bf_mm":102,"tw_mm":6.2,"tf_mm":8,"h_mm":190,"area_cm2":29,"perimetro_cm":79},{"nome":"W 200 x 26,6","massa":26.6,"d_mm":207,"bf_mm":133,"tw_mm":5.8,"tf_mm":8.4,"h_mm":190,"area_cm2":34.2,"perimetro_cm":92},{"nome":"W 200 x 31,3","massa":31.3,"d_mm":210,"bf_mm":134,"tw_mm":6.4,"tf_mm":10.2,"h_mm":190,"area_cm2":40.3,"perimetro_cm":93},{"nome":"W 200 x 35,9 (H)","massa":35.9,"d_mm":201,"bf_mm":165,"tw_mm":6.2,"tf_mm":10.2,"h_mm":181,"area_cm2":45.7,"perimetro_cm":103},{"nome":"W 200 x 41,7 (H)","massa":41.7,"d_mm":205,"bf_mm":166,"tw_mm":7.2,"tf_mm":11.8,"h_mm":181,"area_cm2":53.5,"perimetro_cm":104},{"nome":"W 200 x 46,1 (H)","massa":46.1,"d_mm":203,"bf_mm":203,"tw_mm":7.2,"tf_mm":11,"h_mm":181,"area_cm2":58.6,"perimetro_cm":119},{"nome":"W 200 x 52,0 (H)","massa":52,"d_mm":206,"bf_mm":204,"tw_mm":7.9,"tf_mm":12.6,"h_mm":181,"area_cm2":66.9,"perimetro_cm":119},{"nome":"W 200 x 59,0 (H)","massa":59,"d_mm":210,"bf_mm":205,"tw_mm":9.1,"tf_mm":14.2,"h_mm":182,"area_cm2":76,"perimetro_cm":120},{"nome":"W 200 x 71,0 (H)","massa":71,"d_mm":216,"bf_mm":206,"tw_mm":10.2,"tf_mm":17.4,"h_mm":181,"area_cm2":91,"perimetro_cm":122},{"nome":"W 200 x 86,0 (H)","massa":86,"d_mm":222,"bf_mm":209,"tw_mm":13,"tf_mm":20.6,"h_mm":181,"area_cm2":110.9,"perimetro_cm":123},{"nome":"W 250 x 17,9","massa":17.9,"d_mm":251,"bf_mm":101,"tw_mm":4.8,"tf_mm":5.3,"h_mm":240,"area_cm2":23.1,"perimetro_cm":88},{"nome":"W 250 x 22,3","massa":22.3,"d_mm":254,"bf_mm":102,"tw_mm":5.8,"tf_mm":6.9,"h_mm":240,"area_cm2":28.9,"perimetro_cm":89},{"nome":"W 250 x 25,3","massa":25.3,"d_mm":257,"bf_mm":102,"tw_mm":6.1,"tf_mm":8.4,"h_mm":240,"area_cm2":32.6,"perimetro_cm":89},{"nome":"W 250 x 28,4","massa":28.4,"d_mm":260,"bf_mm":102,"tw_mm":6.4,"tf_mm":10,"h_mm":240,"area_cm2":36.6,"perimetro_cm":90},{"nome":"W 250 x 32,7","massa":32.7,"d_mm":258,"bf_mm":146,"tw_mm":6.1,"tf_mm":9.1,"h_mm":240,"area_cm2":42.1,"perimetro_cm":107},{"nome":"W 250 x 38,5","massa":38.5,"d_mm":262,"bf_mm":147,"tw_mm":6.6,"tf_mm":11.2,"h_mm":240,"area_cm2":49.6,"perimetro_cm":108},{"nome":"W 250 x 44,8","massa":44.8,"d_mm":266,"bf_mm":148,"tw_mm":7.6,"tf_mm":13,"h_mm":240,"area_cm2":57.6,"perimetro_cm":109},{"nome":"W 250 x 73,0 (H)","massa":73,"d_mm":253,"bf_mm":254,"tw_mm":8.6,"tf_mm":14.2,"h_mm":225,"area_cm2":92.7,"perimetro_cm":148},{"nome":"W 250 x 80,0 (H)","massa":80,"d_mm":256,"bf_mm":255,"tw_mm":9.4,"tf_mm":15.6,"h_mm":225,"area_cm2":101.9,"perimetro_cm":149},{"nome":"W 250 x 89,0 (H)","massa":89,"d_mm":260,"bf_mm":256,"tw_mm":10.7,"tf_mm":17.3,"h_mm":225,"area_cm2":113.9,"perimetro_cm":150},{"nome":"W 250 x 101,0 (H)","massa":101,"d_mm":264,"bf_mm":257,"tw_mm":11.9,"tf_mm":19.6,"h_mm":225,"area_cm2":128.7,"perimetro_cm":151},{"nome":"W 250 x 115,0 (H)","massa":115,"d_mm":269,"bf_mm":259,"tw_mm":13.5,"tf_mm":22.1,"h_mm":225,"area_cm2":146.1,"perimetro_cm":153},{"nome":"W 310 x 21,0","massa":21,"d_mm":303,"bf_mm":101,"tw_mm":5.1,"tf_mm":5.7,"h_mm":292,"area_cm2":27.2,"perimetro_cm":98},{"nome":"W 310 x 23,8","massa":23.8,"d_mm":305,"bf_mm":101,"tw_mm":5.6,"tf_mm":6.7,"h_mm":292,"area_cm2":30.7,"perimetro_cm":99},{"nome":"W 310 x 28,3","massa":28.3,"d_mm":309,"bf_mm":102,"tw_mm":6,"tf_mm":8.9,"h_mm":291,"area_cm2":36.5,"perimetro_cm":100},{"nome":"W 310 x 32,7","massa":32.7,"d_mm":313,"bf_mm":102,"tw_mm":6.6,"tf_mm":10.8,"h_mm":291,"area_cm2":42.1,"perimetro_cm":100},{"nome":"W 310 x 38,7","massa":38.7,"d_mm":310,"bf_mm":165,"tw_mm":5.8,"tf_mm":9.7,"h_mm":291,"area_cm2":49.7,"perimetro_cm":125},{"nome":"W 310 x 44,5","massa":44.5,"d_mm":313,"bf_mm":166,"tw_mm":6.6,"tf_mm":11.2,"h_mm":291,"area_cm2":57.2,"perimetro_cm":126},{"nome":"W 310 x 52,0","massa":52,"d_mm":317,"bf_mm":167,"tw_mm":7.6,"tf_mm":13.2,"h_mm":291,"area_cm2":67,"perimetro_cm":127},{"nome":"W 310 x 97,0 (H)","massa":97,"d_mm":308,"bf_mm":305,"tw_mm":9.9,"tf_mm":15.4,"h_mm":277,"area_cm2":123.6,"perimetro_cm":179},{"nome":"W 310 x 107,0 (H)","massa":107,"d_mm":311,"bf_mm":306,"tw_mm":10.9,"tf_mm":17,"h_mm":277,"area_cm2":136.4,"perimetro_cm":180},{"nome":"W 310 x 117,0 (H)","massa":117,"d_mm":314,"bf_mm":307,"tw_mm":11.9,"tf_mm":18.7,"h_mm":277,"area_cm2":149.9,"perimetro_cm":180},{"nome":"W 360 x 32,9","massa":32.9,"d_mm":349,"bf_mm":127,"tw_mm":5.8,"tf_mm":8.5,"h_mm":332,"area_cm2":42.1,"perimetro_cm":117},{"nome":"W 360 x 39,0","massa":39,"d_mm":353,"bf_mm":128,"tw_mm":6.5,"tf_mm":10.7,"h_mm":332,"area_cm2":50.2,"perimetro_cm":118},{"nome":"W 360 x 44,0","massa":44,"d_mm":352,"bf_mm":171,"tw_mm":6.9,"tf_mm":9.8,"h_mm":332,"area_cm2":57.7,"perimetro_cm":135},{"nome":"W 360 x 51,0","massa":51,"d_mm":355,"bf_mm":171,"tw_mm":7.2,"tf_mm":11.6,"h_mm":332,"area_cm2":64.8,"perimetro_cm":136},{"nome":"W 360 x 57,8","massa":57.8,"d_mm":358,"bf_mm":172,"tw_mm":7.9,"tf_mm":13.1,"h_mm":332,"area_cm2":72.5,"perimetro_cm":137},{"nome":"W 360 x 64,0","massa":64,"d_mm":347,"bf_mm":203,"tw_mm":7.7,"tf_mm":13.5,"h_mm":320,"area_cm2":81.7,"perimetro_cm":146},{"nome":"W 360 x 72,0","massa":72,"d_mm":350,"bf_mm":204,"tw_mm":8.6,"tf_mm":15.1,"h_mm":320,"area_cm2":91.3,"perimetro_cm":147},{"nome":"W 360 x 79,0","massa":79,"d_mm":354,"bf_mm":205,"tw_mm":9.4,"tf_mm":16.8,"h_mm":320,"area_cm2":101.2,"perimetro_cm":148},{"nome":"W 360 x 91,0 (H)","massa":91,"d_mm":353,"bf_mm":254,"tw_mm":9.5,"tf_mm":16.4,"h_mm":320,"area_cm2":115.9,"perimetro_cm":168},{"nome":"W 360 x 101,0 (H)","massa":101,"d_mm":357,"bf_mm":255,"tw_mm":10.5,"tf_mm":18.3,"h_mm":320,"area_cm2":129.5,"perimetro_cm":168},{"nome":"W 360 x 110,0 (H)","massa":110,"d_mm":360,"bf_mm":256,"tw_mm":11.4,"tf_mm":19.9,"h_mm":320,"area_cm2":140.6,"perimetro_cm":169},{"nome":"W 360 x 122,0 (H)","massa":122,"d_mm":363,"bf_mm":257,"tw_mm":13,"tf_mm":21.7,"h_mm":320,"area_cm2":155.3,"perimetro_cm":170},{"nome":"W 410 x 38,8","massa":38.8,"d_mm":399,"bf_mm":140,"tw_mm":6.4,"tf_mm":8.8,"h_mm":381,"area_cm2":50.3,"perimetro_cm":132},{"nome":"W 410 x 46,1","massa":46.1,"d_mm":403,"bf_mm":140,"tw_mm":7,"tf_mm":11.2,"h_mm":381,"area_cm2":59.2,"perimetro_cm":133},{"nome":"W 410 x 53,0","massa":53,"d_mm":403,"bf_mm":177,"tw_mm":7.5,"tf_mm":10.9,"h_mm":381,"area_cm2":68.4,"perimetro_cm":148},{"nome":"W 410 x 60,0","massa":60,"d_mm":407,"bf_mm":178,"tw_mm":7.7,"tf_mm":12.8,"h_mm":381,"area_cm2":76.2,"perimetro_cm":149},{"nome":"W 410 x 67,0","massa":67,"d_mm":410,"bf_mm":179,"tw_mm":8.8,"tf_mm":14.4,"h_mm":381,"area_cm2":86.3,"perimetro_cm":150},{"nome":"W 410 x 75,0","massa":75,"d_mm":413,"bf_mm":180,"tw_mm":9.7,"tf_mm":16,"h_mm":381,"area_cm2":95.8,"perimetro_cm":151},{"nome":"W 410 x 85,0","massa":85,"d_mm":417,"bf_mm":181,"tw_mm":10.9,"tf_mm":18.2,"h_mm":381,"area_cm2":108.6,"perimetro_cm":152},{"nome":"W 460 x 52,0","massa":52,"d_mm":450,"bf_mm":152,"tw_mm":7.6,"tf_mm":10.8,"h_mm":428,"area_cm2":66.6,"perimetro_cm":147},{"nome":"W 460 x 60,0","massa":60,"d_mm":455,"bf_mm":153,"tw_mm":8,"tf_mm":13.3,"h_mm":428,"area_cm2":76.2,"perimetro_cm":149},{"nome":"W 460 x 68,0","massa":68,"d_mm":459,"bf_mm":154,"tw_mm":9.1,"tf_mm":15.4,"h_mm":428,"area_cm2":87.6,"perimetro_cm":150},{"nome":"W 460 x 74,0","massa":74,"d_mm":457,"bf_mm":190,"tw_mm":9,"tf_mm":14.5,"h_mm":428,"area_cm2":94.9,"perimetro_cm":164},{"nome":"W 460 x 82,0","massa":82,"d_mm":460,"bf_mm":191,"tw_mm":9.9,"tf_mm":16,"h_mm":428,"area_cm2":104.7,"perimetro_cm":164},{"nome":"W 460 x 89,0","massa":89,"d_mm":463,"bf_mm":192,"tw_mm":10.5,"tf_mm":17.7,"h_mm":428,"area_cm2":114.1,"perimetro_cm":165},{"nome":"W 460 x 97,0","massa":97,"d_mm":466,"bf_mm":193,"tw_mm":11.4,"tf_mm":19,"h_mm":428,"area_cm2":123.4,"perimetro_cm":166},{"nome":"W 460 x 106,0","massa":106,"d_mm":469,"bf_mm":194,"tw_mm":12.6,"tf_mm":20.6,"h_mm":428,"area_cm2":135.1,"perimetro_cm":167},{"nome":"W 530 x 66,0","massa":66,"d_mm":525,"bf_mm":165,"tw_mm":8.9,"tf_mm":11.4,"h_mm":502,"area_cm2":83.6,"perimetro_cm":167},{"nome":"W 530 x 72,0","massa":72,"d_mm":524,"bf_mm":207,"tw_mm":9,"tf_mm":10.9,"h_mm":502,"area_cm2":91.6,"perimetro_cm":184},{"nome":"W 530 x 74,0","massa":74,"d_mm":529,"bf_mm":166,"tw_mm":9.7,"tf_mm":13.6,"h_mm":502,"area_cm2":95.1,"perimetro_cm":168},{"nome":"W 530 x 82,0","massa":82,"d_mm":528,"bf_mm":209,"tw_mm":9.5,"tf_mm":13.3,"h_mm":501,"area_cm2":104.5,"perimetro_cm":185},{"nome":"W 530 x 85,0","massa":85,"d_mm":535,"bf_mm":166,"tw_mm":10.3,"tf_mm":16.5,"h_mm":502,"area_cm2":107.7,"perimetro_cm":169},{"nome":"W 530 x 92,0","massa":92,"d_mm":533,"bf_mm":209,"tw_mm":10.2,"tf_mm":15.6,"h_mm":502,"area_cm2":117.6,"perimetro_cm":186},{"nome":"W 530 x 101,0","massa":101,"d_mm":537,"bf_mm":210,"tw_mm":10.9,"tf_mm":17.4,"h_mm":502,"area_cm2":130,"perimetro_cm":186},{"nome":"W 530 x 109,0","massa":109,"d_mm":539,"bf_mm":211,"tw_mm":11.6,"tf_mm":18.8,"h_mm":501,"area_cm2":139.7,"perimetro_cm":187},{"nome":"W 610 x 101,0","massa":101,"d_mm":603,"bf_mm":228,"tw_mm":10.5,"tf_mm":14.9,"h_mm":573,"area_cm2":130.3,"perimetro_cm":207},{"nome":"W 610 x 113,0","massa":113,"d_mm":608,"bf_mm":228,"tw_mm":11.2,"tf_mm":17.3,"h_mm":573,"area_cm2":145.3,"perimetro_cm":208},{"nome":"W 610 x 125,0","massa":125,"d_mm":612,"bf_mm":229,"tw_mm":11.9,"tf_mm":19.6,"h_mm":573,"area_cm2":160.1,"perimetro_cm":209},{"nome":"W 610 x 140,0","massa":140,"d_mm":617,"bf_mm":230,"tw_mm":13.1,"tf_mm":22.2,"h_mm":573,"area_cm2":179.3,"perimetro_cm":210},{"nome":"W 610 x 155,0","massa":155,"d_mm":611,"bf_mm":324,"tw_mm":12.7,"tf_mm":19,"h_mm":573,"area_cm2":198.1,"perimetro_cm":247},{"nome":"W 610 x 174,0","massa":174,"d_mm":616,"bf_mm":325,"tw_mm":14,"tf_mm":21.6,"h_mm":573,"area_cm2":222.8,"perimetro_cm":248}];
+function massaTR(n){var m=n.match(/^TR\s+(\d+(?:[,.]\d+)?)\s/i);return m?parseFloat(m[1].replace(',','.')):null;}
+var TRI=[{"nome":"A 100","area_cm2":null,"perimetro_cm":null},{"nome":"A 120","area_cm2":null,"perimetro_cm":null},{"nome":"A 150","area_cm2":null,"perimetro_cm":null},{"nome":"A 45","area_cm2":null,"perimetro_cm":null},{"nome":"A 55","area_cm2":null,"perimetro_cm":null},{"nome":"A 65","area_cm2":null,"perimetro_cm":null},{"nome":"A 75","area_cm2":null,"perimetro_cm":null},{"nome":"CR 104","area_cm2":null,"perimetro_cm":null},{"nome":"CR 105 (TR52)","area_cm2":null,"perimetro_cm":null},{"nome":"CR 135","area_cm2":null,"perimetro_cm":null},{"nome":"CR 171","area_cm2":null,"perimetro_cm":null},{"nome":"CR 175 (TR 87)","area_cm2":null,"perimetro_cm":null},{"nome":"TR 25 ASCE 5040","area_cm2":31.5,"perimetro_cm":42.33},{"nome":"TR 30 ASCE 6040","area_cm2":38.39,"perimetro_cm":46.4},{"nome":"TR 32 ASCE 6540","area_cm2":40.8,"perimetro_cm":48.68},{"nome":"TR 37 ASCE 7540","area_cm2":47.3,"perimetro_cm":51.66},{"nome":"TR 40 ASCE 8040","area_cm2":50.71,"perimetro_cm":53.6},{"nome":"TR 45 ASCE 90 ARA-A","area_cm2":56.9,"perimetro_cm":59.23},{"nome":"TR 50 ASCE 100 RE","area_cm2":64.2,"perimetro_cm":62.87},{"nome":"TR 57 ASCE 115 RE","area_cm2":72.5,"perimetro_cm":67.99},{"nome":"TR 68 ASCE 136 RE","area_cm2":86.1,"perimetro_cm":74.8}].map(function(t){return Object.assign({},t,{massa:massaTR(t.nome)});});
+var PRE=[{"nome":"PREFAZ ARMADA CIRCULAR PLENA 26","dext_cm":26,"dint_cm":null,"area_cm2":531,"perimetro_cm":82},{"nome":"PREFAZ PROTENDIDA CIRCULAR VAZADA 34","dext_cm":34,"dint_cm":18,"area_cm2":653,"perimetro_cm":107},{"nome":"PREFAZ PROTENDIDA CIRCULAR VAZADA 38","dext_cm":38,"dint_cm":21,"area_cm2":788,"perimetro_cm":119},{"nome":"PREFAZ PROTENDIDA CIRCULAR VAZADA 40","dext_cm":40,"dint_cm":24,"area_cm2":804,"perimetro_cm":126},{"nome":"PREFAZ PROTENDIDA CIRCULAR VAZADA 42","dext_cm":42,"dint_cm":24,"area_cm2":933,"perimetro_cm":132},{"nome":"PREFAZ PROTENDIDA CIRCULAR VAZADA 50","dext_cm":50,"dint_cm":31,"area_cm2":1209,"perimetro_cm":157},{"nome":"PREFAZ PROTENDIDA CIRCULAR VAZADA 60","dext_cm":60,"dint_cm":38,"area_cm2":1693,"perimetro_cm":188},{"nome":"PREFAZ PROTENDIDA CIRCULAR VAZADA 70","dext_cm":70,"dint_cm":46,"area_cm2":2187,"perimetro_cm":220},{"nome":"PREFAZ PROTENDIDA QUADRADA PLENA 17","dext_cm":17,"dint_cm":null,"area_cm2":289,"perimetro_cm":68},{"nome":"PREFAZ PROTENDIDA QUADRADA PLENA 20","dext_cm":20,"dint_cm":null,"area_cm2":400,"perimetro_cm":80},{"nome":"PREFAZ PROTENDIDA QUADRADA PLENA 23","dext_cm":23,"dint_cm":null,"area_cm2":529,"perimetro_cm":92},{"nome":"PREFAZ PROTENDIDA QUADRADA PLENA 26,5","dext_cm":26.5,"dint_cm":null,"area_cm2":702,"perimetro_cm":106},{"nome":"PREFAZ PROTENDIDA QUADRADA PLENA 30","dext_cm":30,"dint_cm":null,"area_cm2":900,"perimetro_cm":120},{"nome":"PREFAZ PROTENDIDA QUADRADA VAZADA 23","dext_cm":23,"dint_cm":10,"area_cm2":450,"perimetro_cm":92},{"nome":"PREFAZ PROTENDIDA QUADRADA VAZADA 26,5","dext_cm":26.5,"dint_cm":12,"area_cm2":589,"perimetro_cm":106},{"nome":"PREFAZ PROTENDIDA QUADRADA VAZADA 30","dext_cm":30,"dint_cm":16,"area_cm2":699,"perimetro_cm":120},{"nome":"PREFAZ PROTENDIDA QUADRADA VAZADA 34","dext_cm":34,"dint_cm":20,"area_cm2":842,"perimetro_cm":136},{"nome":"PREFAZ PROTENDIDA QUADRADA VAZADA 35","dext_cm":35,"dint_cm":20,"area_cm2":911,"perimetro_cm":140},{"nome":"PREFAZ PROTENDIDA QUADRADA VAZADA 37,5","dext_cm":37.5,"dint_cm":23,"area_cm2":991,"perimetro_cm":150}];
+
+var dados={},golpes=[],selMet=null,selTri=null,selPre=null;
+var DB_MAP={"met":MET,"tri":TRI,"pre":PRE};
+
+function gv(id){var el=document.getElementById(id);return el?el.value:"";}
+function sv(id,v){var el=document.getElementById(id);if(el)el.value=(v==null?"":v);}
+function show(id,s){var el=document.getElementById(id);if(el)el.style.display=s?"block":"none";}
+
+function initDatas(){
+  var now=new Date();
+  var dia=document.getElementById("in_dia");
+  for(var i=1;i<=31;i++){var o=document.createElement("option");o.value=o.textContent=String(i).padStart(2,"0");dia.appendChild(o);}
+  dia.value=String(now.getDate()).padStart(2,"0");
+  var mes=document.getElementById("in_mes");
+  MESES.forEach(function(m,i){var o=document.createElement("option");o.value=String(i+1).padStart(2,"0");o.textContent=m;mes.appendChild(o);});
+  mes.value=String(now.getMonth()+1).padStart(2,"0");
+  var ano=document.getElementById("in_ano");
+  for(var a=now.getFullYear()-1;a<=now.getFullYear()+10;a++){var o=document.createElement("option");o.value=o.textContent=a;ano.appendChild(o);}
+  ano.value=now.getFullYear();
+  var hr=document.getElementById("in_hora");
+  for(var h=0;h<24;h++){var o=document.createElement("option");o.value=o.textContent=String(h).padStart(2,"0");hr.appendChild(o);}
+  hr.value=String(now.getHours()).padStart(2,"0");
+  var mn=document.getElementById("in_min");
+  for(var m=0;m<60;m++){var o=document.createElement("option");o.value=o.textContent=String(m).padStart(2,"0");mn.appendChild(o);}
+  mn.value="00";
+}
+
+function renderLista(tipo,filtro){
+  var arr=DB_MAP[tipo],f=(filtro||"").toLowerCase();
+  var list=document.getElementById("list_"+tipo);
+  var itens=arr.filter(function(x){return x.nome.toLowerCase().indexOf(f)>=0;});
+  if(!itens.length){list.innerHTML="<div class=\"picker-item\" style=\"color:#aaa\">Nenhum resultado</div>";return;}
+  var cur=(tipo==="met"&&selMet)?selMet.nome:(tipo==="tri"&&selTri)?selTri.nome:(tipo==="pre"&&selPre)?selPre.nome:"";
+  list.innerHTML=itens.map(function(x){
+    return "<div class=\"picker-item"+(cur===x.nome?" selected":"")+"\" onclick=\"selecionarItem('"+tipo+"','"+x.nome.replace(/\\/g,"\\\\").replace(/'/g,"\\'")+"')\">"+x.nome+"</div>";
+  }).join("");
+}
+function abrirLista(t){renderLista(t,gv("srch_"+t));show("list_"+t,true);}
+function filtrarLista(t){renderLista(t,gv("srch_"+t));show("list_"+t,true);}
+
+function selecionarItem(tipo,nome){
+  show("list_"+tipo,false);
+  if(tipo==="met"){
+    var p=MET.find(function(x){return x.nome===nome;});if(!p)return;
+    selMet=p;sv("srch_met",nome);
+    document.getElementById("sel_met_nome").textContent=nome;show("sel_met_nome",true);
+    sv("m_d",p.d_mm);sv("m_bf",p.bf_mm);sv("m_tw",p.tw_mm);sv("m_tf",p.tf_mm);
+    sv("m_h",p.h_mm);sv("m_massa",p.massa);sv("m_area",p.area_cm2);sv("m_perim",p.perimetro_cm);
+    var pts=[];if(p.area_cm2)pts.push("Área: "+p.area_cm2+" cm²");if(p.perimetro_cm)pts.push("Per.: "+p.perimetro_cm+" cm");if(p.massa)pts.push("Massa: "+p.massa+" kg/m");
+    var b=document.getElementById("bdg_met");if(pts.length){b.style.display="flex";b.innerHTML="<b>"+pts.join("</b> &nbsp;·&nbsp; <b>")+"</b>";}
+  } else if(tipo==="tri"){
+    var p=TRI.find(function(x){return x.nome===nome;});if(!p)return;
+    selTri=p;sv("srch_tri",nome);
+    document.getElementById("sel_tri_nome").textContent=nome;show("sel_tri_nome",true);
+    sv("t_area",p.area_cm2);sv("t_perim",p.perimetro_cm);sv("t_massa",p.massa);
+    var pts=[];if(p.massa)pts.push("Massa: "+p.massa+" kg/m");if(p.area_cm2)pts.push("Área: "+p.area_cm2+" cm²");if(p.perimetro_cm)pts.push("Per.: "+p.perimetro_cm+" cm");
+    var b=document.getElementById("bdg_tri");if(pts.length){b.style.display="flex";b.innerHTML="<b>"+pts.join("</b> &nbsp;·&nbsp; <b>")+"</b>";}else b.style.display="none";
+  } else {
+    var p=PRE.find(function(x){return x.nome===nome;});if(!p)return;
+    selPre=p;sv("srch_pre",nome);
+    document.getElementById("sel_pre_nome").textContent=nome;show("sel_pre_nome",true);
+    sv("p_dext",p.dext_cm);sv("p_dint",p.dint_cm);sv("p_area",p.area_cm2);sv("p_perim",p.perimetro_cm);
+    var pts=[];if(p.dext_cm)pts.push("D ext: "+p.dext_cm+" cm");if(p.dint_cm)pts.push("D int: "+p.dint_cm+" cm");if(p.area_cm2)pts.push("Área: "+p.area_cm2+" cm²");if(p.perimetro_cm)pts.push("Per.: "+p.perimetro_cm+" cm");
+    var b=document.getElementById("bdg_pre");if(pts.length){b.style.display="flex";b.innerHTML="<b>"+pts.join("</b> &nbsp;·&nbsp; <b>")+"</b>";}
+  }
+}
+
+document.addEventListener("click",function(e){
+  ["met","tri","pre"].forEach(function(t){
+    var w=document.getElementById("list_"+t),i=document.getElementById("srch_"+t);
+    if(w&&i&&!w.contains(e.target)&&e.target!==i)w.style.display="none";
+  });
+});
+
+function irPara(id){document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});document.getElementById(id).classList.add("active");window.scrollTo(0,0);}
+function irParaS2(){dados.projeto=gv("in_projeto");dados.cidade=gv("in_cidade");dados.estaca=gv("in_estaca");dados.data=gv("in_dia")+"/"+gv("in_mes")+"/"+gv("in_ano");dados.hora=gv("in_hora")+":"+gv("in_min");irPara("s2");}
+function onTipoChange(){
+  var t=document.getElementById("in_tipo").value,circ=["Hélice Contínua","Raiz","Trado Mecanizado","Tubulão"];
+  show("bloco_circ",circ.indexOf(t)>=0);show("bloco_met",t==="Metálica");show("bloco_tri",t==="Trilho");show("bloco_pre",t==="Pré-Moldada de Concreto");
+}
+function irParaGolpes(){dados.tipo=document.getElementById("in_tipo").value;golpes=[];atualizaCtr();irPara("s3");}
+function calcCirc(){
+  var d=parseFloat(gv("in_diam")),b=document.getElementById("bdg_circ");
+  if(d>0){b.style.display="flex";b.innerHTML="<b>Área: "+(Math.PI*d/2*d/2).toFixed(2)+" cm²</b> &nbsp;·&nbsp; <b>Per.: "+(Math.PI*d).toFixed(2)+" cm</b>";}
+  else b.style.display="none";
+}
+function calcEnsaio(){var c=parseFloat(gv("in_carga"));if(c>0)sv("in_cens",(c*2).toFixed(2));}
+function atualizaCtr(){document.getElementById("golpe_ctr").textContent="Passo 3 de 4 · Golpe "+(golpes.length+1);}
+
+function getDims(){
+  var t=dados.tipo,o={};
+  if(["Hélice Contínua","Raiz","Trado Mecanizado","Tubulão"].indexOf(t)>=0){
+    var d=gv("in_diam");if(d){o["Diametro [cm]"]=d;o["Area [cm2]"]=(Math.PI*(+d/2)*(+d/2)).toFixed(2);o["Perimetro [cm]"]=(Math.PI*+d).toFixed(2);}
+  } else if(t==="Metálica"){
+    if(selMet)o["Perfil"]=selMet.nome;
+    [["m_d","d [mm]"],["m_bf","bf [mm]"],["m_tw","tw [mm]"],["m_tf","tf [mm]"],["m_h","h [mm]"],["m_massa","Massa Linear [kg/m]"],["m_area","Area [cm2]"],["m_perim","Perimetro [cm]"]].forEach(function(f){var v=gv(f[0]);if(v)o[f[1]]=v;});
+  } else if(t==="Trilho"){
+    if(selTri)o["Trilho"]=selTri.nome;
+    [["t_area","Area [cm2]"],["t_perim","Perimetro [cm]"],["t_massa","Massa Linear [kg/m]"]].forEach(function(f){var v=gv(f[0]);if(v)o[f[1]]=v;});
+  } else if(t==="Pré-Moldada de Concreto"){
+    if(selPre)o["Perfil"]=selPre.nome;
+    [["p_dext","D Externo [cm]"],["p_dint","D Interno [cm]"],["p_area","Area [cm2]"],["p_perim","Perimetro [cm]"]].forEach(function(f){var v=gv(f[0]);if(v)o[f[1]]=v;});
+  }
+  return o;
+}
+
+function addGolpe(){
+  var g=Object.assign({"Projeto":dados.projeto,"Cidade":dados.cidade,"Estaca":dados.estaca,"Tipo Estaca":dados.tipo,"Data":dados.data,"Hora":dados.hora,"Comp. Util [m]":gv("in_comp"),"Carga Trab. [tf]":gv("in_carga"),"Carga Ensaio [tf]":gv("in_cens"),"Alt. Golpe [cm]":gv("in_alt"),"Nega [mm]":gv("in_nega"),"EMX [tn.m]":gv("in_emx"),"RMX [tn]":gv("in_rmx"),"DMX [mm]":gv("in_dmx")},getDims());
+  golpes.push(g);
+  ["in_comp","in_carga","in_cens","in_alt","in_nega","in_emx","in_rmx","in_dmx"].forEach(function(id){sv(id,"");});
+  atualizaCtr();toast("Golpe "+golpes.length+" adicionado","#1A6FC4");
+}
+
+function irParaResumo(){
+  if(!golpes.length){toast("Adicione pelo menos um golpe","#E24B4A");return;}
+  document.getElementById("res_titulo").textContent=(dados.projeto||"Sem nome")+" · "+(dados.estaca||"Sem estaca");
+  document.getElementById("res_sub").textContent=golpes.length+" golpe(s) · "+(dados.cidade?dados.cidade+" · ":"")+dados.data+" "+dados.hora;
+  var rows=[["Projeto",dados.projeto||"—"],["Cidade",dados.cidade||"—"],["Estaca",dados.estaca||"—"],["Tipo",dados.tipo],["Data",dados.data],["Hora",dados.hora]];
+  document.getElementById("res_dados").innerHTML="<div class=\"card\" style=\"margin-bottom:.75rem\">"+rows.map(function(r){return"<div class=\"sum-row\"><span class=\"sum-lbl\">"+r[0]+"</span><span class=\"sum-val\">"+r[1]+"</span></div>";}).join("")+"</div>";
+  document.getElementById("res_golpes").innerHTML=golpes.map(function(g,i){
+    var info=[g["Comp. Util [m]"]?"Comp: "+g["Comp. Util [m]"]+"m":"",g["Carga Trab. [tf]"]?"Carga: "+g["Carga Trab. [tf]"]+"tf":"",g["Nega [mm]"]?"Nega: "+g["Nega [mm]"]+"mm":""].filter(Boolean).join(" · ")||"—";
+    return"<div class=\"golpe-item\"><div><div class=\"golpe-num\">Golpe "+(i+1)+"</div><div class=\"golpe-info\">"+info+"</div></div><button class=\"del-btn\" onclick=\"remGolpe("+i+")\">✕</button></div>";
+  }).join("");
+  irPara("s4");
+}
+function remGolpe(i){golpes.splice(i,1);irParaResumo();}
+function nomeArq(ext){return(dados.projeto||"projeto")+"_"+(dados.estaca||"estaca")+"_"+dados.data.replace(/\//g,"")+"."+ext;}
+
+function expXLSX(){
+  if(!golpes.length){toast("Sem golpes","#E24B4A");return;}
+  if(typeof XLSX==="undefined"){toast("Biblioteca Excel não carregada. Verifique conexão.","#E24B4A");return;}
+  var ws=XLSX.utils.json_to_sheet(golpes),wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,"Golpes");
+  ws["!cols"]=Object.keys(golpes[0]).map(function(k){return{wch:Math.max(k.length,Math.max.apply(null,golpes.map(function(g){return String(g[k]||"").length;})))+2};});
+  XLSX.writeFile(wb,nomeArq("xlsx"));toast("Excel salvo!","#217346");
+}
+
+function expPDF(){
+  if(!golpes.length){toast("Sem golpes","#E24B4A");return;}
+  if(typeof window.jspdf==="undefined"){toast("Biblioteca PDF não carregada. Verifique conexão.","#E24B4A");return;}
+  var jsPDF=window.jspdf.jsPDF;
+  var doc=new jsPDF({orientation:"landscape",unit:"mm",format:"a4"});
+  var W=doc.internal.pageSize.getWidth();
+  doc.setFillColor(26,111,196);doc.rect(0,0,W,20,"F");
+  doc.setTextColor(255,255,255);doc.setFontSize(13);doc.setFont("helvetica","bold");
+  doc.text("REGISTRO DE CRAVACAO DE ESTACAS - PDA",W/2,8,{align:"center"});
+  doc.setFontSize(9);doc.setFont("helvetica","normal");
+  var l2=[(dados.projeto||"—"),(dados.cidade?"| "+dados.cidade:""),"| Estaca: "+(dados.estaca||"—"),"| "+dados.tipo,"| "+dados.data+" "+dados.hora].filter(Boolean).join(" ");
+  doc.text(l2,W/2,14,{align:"center"});
+  var g0=golpes[0];
+  var dimKeys=["Diametro [cm]","Area [cm2]","Perimetro [cm]","Perfil","Trilho","d [mm]","bf [mm]","tw [mm]","tf [mm]","h [mm]","Massa Linear [kg/m]","D Externo [cm]","D Interno [cm]"];
+  var dp=[];dimKeys.forEach(function(k){if(g0[k])dp.push(k+": "+g0[k]);});
+  if(dp.length){doc.setTextColor(60,60,60);doc.setFontSize(8);doc.setFont("helvetica","normal");doc.text(dp.join("   "),14,26);}
+  var cm=[["#","#"],["Comp. Util [m]","Comp.\nUtil (m)"],["Carga Trab. [tf]","Carga\nTrab. (tf)"],["Carga Ensaio [tf]","Carga\nEnsaio (tf)"],["Alt. Golpe [cm]","Alt.\nGolpe (cm)"],["Nega [mm]","Nega\n(mm)"],["EMX [tn.m]","EMX\n(tn.m)"],["RMX [tn]","RMX\n(tn)"],["DMX [mm]","DMX\n(mm)"]];
+  var head=[cm.map(function(c){return c[1];})];
+  var body=golpes.map(function(g,i){return cm.map(function(c){return c[0]==="#"?String(i+1):String(g[c[0]]||"");});});
+  doc.autoTable({head:head,body:body,startY:dp.length?31:23,styles:{fontSize:8,cellPadding:2,halign:"center",valign:"middle"},headStyles:{fillColor:[26,111,196],textColor:255,fontStyle:"bold",halign:"center"},alternateRowStyles:{fillColor:[240,250,245]},margin:{left:14,right:14},didDrawPage:function(){var pg=doc.internal.getCurrentPageInfo().pageNumber,tot=doc.internal.getNumberOfPages();doc.setFontSize(7);doc.setTextColor(150,150,150);doc.text("Pagina "+pg+"/"+tot+"  |  "+new Date().toLocaleString("pt-BR"),W/2,doc.internal.pageSize.getHeight()-4,{align:"center"});}});
+  doc.save(nomeArq("pdf"));toast("PDF salvo!","#C0392B");
+}
+
+function novoReg(){
+  golpes=[];dados={};selMet=null;selTri=null;selPre=null;
+  ["in_projeto","in_cidade","in_estaca","in_comp","in_carga","in_cens","in_alt","in_nega","in_emx","in_rmx","in_dmx","in_diam","srch_met","srch_tri","srch_pre","m_d","m_bf","m_tw","m_tf","m_h","m_massa","m_area","m_perim","t_area","t_perim","t_massa","p_dext","p_dint","p_area","p_perim"].forEach(function(id){sv(id,"");});
+  ["bdg_met","bdg_tri","bdg_pre","bdg_circ","sel_met_nome","sel_tri_nome","sel_pre_nome"].forEach(function(id){show(id,false);});
+  irPara("s1");
+}
+
+function toast(msg,bg){
+  var fb=document.createElement("div");
+  fb.style.cssText="position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:"+bg+";color:white;padding:10px 18px;border-radius:20px;font-size:14px;font-weight:600;z-index:9999;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.2)";
+  fb.textContent=msg;document.body.appendChild(fb);setTimeout(function(){fb.remove();},2500);
+}
+
+// Status online/offline
+function updateStatus(){
+  var bar=document.getElementById("status-bar");
+  if(navigator.onLine){bar.textContent="Online";bar.className="online";setTimeout(function(){bar.style.display="none";},2000);}
+  else{bar.textContent="Offline — app funcionando localmente";bar.className="offline";}
+}
+window.addEventListener("online",updateStatus);
+window.addEventListener("offline",updateStatus);
+
+// Service Worker para cache offline
+if("serviceWorker" in navigator){
+  var swCode = `
+const CACHE = "pda-v1";
+const URLS = [
+  "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"
+];
+self.addEventListener("install", e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(URLS)).then(() => self.skipWaiting()));
+});
+self.addEventListener("activate", e => {
+  e.waitUntil(clients.claim());
+});
+self.addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+      if(res && res.status === 200) {
+        var clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+      }
+      return res;
+    }).catch(() => caches.match(e.request)))
+  );
+});`;
+  var blob=new Blob([swCode],{type:"application/javascript"});
+  var swUrl=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl).catch(function(){});
+}
+
+initDatas();
+onTipoChange();
+</script>
+</body>
+</html>
