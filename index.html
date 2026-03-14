@@ -143,6 +143,12 @@ input:focus,select:focus{outline:none;border-color:#1A6FC4;background:#fff}
       <div class="row"><div><label>D externo (cm)</label><input type="number" inputmode="decimal" id="p_dext"></div><div><label>D interno (cm)</label><input type="number" inputmode="decimal" id="p_dint"></div></div>
       <div class="row"><div><label>Área (cm²)</label><input type="number" inputmode="decimal" id="p_area"></div><div><label>Perímetro (cm)</label><input type="number" inputmode="decimal" id="p_perim"></div></div>
     </div>
+    <div style="height:0.5px;background:#eee;margin:16px 0"></div>
+    <label>Comprimento útil (m)</label><input type="text" inputmode="decimal" id="in_comp">
+    <div class="row">
+      <div><label>Carga de trabalho (tf)</label><input type="text" inputmode="decimal" id="in_carga" oninput="calcEnsaio()"></div>
+      <div><label>Carga de ensaio (tf)</label><input type="text" inputmode="decimal" id="in_cens"><div class="hint">Auto: 2× trabalho</div></div>
+    </div>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn btn-secondary" onclick="irPara('s1')" style="flex:1;margin-top:0">← Voltar</button>
       <button class="btn btn-primary" onclick="irParaGolpes()" style="flex:2;margin-top:0">Continuar →</button>
@@ -157,20 +163,15 @@ input:focus,select:focus{outline:none;border-color:#1A6FC4;background:#fff}
       <div class="hicon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
       <div><h2>Registrar golpe</h2><p id="golpe_ctr">Passo 3 de 4 · Golpe 1</p></div>
     </div>
-    <label>Comprimento útil (m)</label><input type="number" inputmode="decimal" id="in_comp">
     <div class="row">
-      <div><label>Carga de trabalho (tf)</label><input type="number" inputmode="decimal" id="in_carga" oninput="calcEnsaio()"></div>
-      <div><label>Carga de ensaio (tf)</label><input type="number" inputmode="decimal" id="in_cens"><div class="hint">Auto: 2× trabalho</div></div>
+      <div><label>Altura de queda (cm)</label><input type="text" inputmode="decimal" id="in_alt"></div>
+      <div><label>Nega (mm)</label><input type="text" inputmode="decimal" id="in_nega"></div>
     </div>
     <div class="row">
-      <div><label>Altura do golpe (cm)</label><input type="number" inputmode="decimal" id="in_alt"></div>
-      <div><label>Nega (mm)</label><input type="number" inputmode="decimal" id="in_nega"></div>
+      <div><label>EMX (tn.m)</label><input type="text" inputmode="decimal" id="in_emx"></div>
+      <div><label>RMX (tn)</label><input type="text" inputmode="decimal" id="in_rmx"></div>
     </div>
-    <div class="row">
-      <div><label>EMX (tn.m)</label><input type="number" inputmode="decimal" id="in_emx"></div>
-      <div><label>RMX (tn)</label><input type="number" inputmode="decimal" id="in_rmx"></div>
-    </div>
-    <label>DMX (mm)</label><input type="number" inputmode="decimal" id="in_dmx">
+    <label>DMX (mm)</label><input type="text" inputmode="decimal" id="in_dmx">
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn btn-secondary" onclick="irPara('s2')" style="flex:1;margin-top:0">← Voltar</button>
       <button class="btn btn-primary" onclick="addGolpe()" style="flex:2;margin-top:0">+ Adicionar golpe</button>
@@ -291,13 +292,22 @@ function onTipoChange(){
   var t=document.getElementById("in_tipo").value,circ=["Hélice Contínua","Raiz","Trado Mecanizado","Tubulão"];
   show("bloco_circ",circ.indexOf(t)>=0);show("bloco_met",t==="Metálica");show("bloco_tri",t==="Trilho");show("bloco_pre",t==="Pré-Moldada de Concreto");
 }
-function irParaGolpes(){dados.tipo=document.getElementById("in_tipo").value;golpes=[];atualizaCtr();irPara("s3");}
+function irParaGolpes(){
+  dados.tipo=document.getElementById("in_tipo").value;
+  dados.comp=gv("in_comp");
+  dados.carga=gv("in_carga");
+  dados.cens=gv("in_cens");
+  golpes=[];atualizaCtr();irPara("s3");
+}
 function calcCirc(){
-  var d=parseFloat(gv("in_diam")),b=document.getElementById("bdg_circ");
+  var d=parseFloat(gv("in_diam").replace(",",".")),b=document.getElementById("bdg_circ");
   if(d>0){b.style.display="flex";b.innerHTML="<b>Área: "+(Math.PI*d/2*d/2).toFixed(2)+" cm²</b> &nbsp;·&nbsp; <b>Per.: "+(Math.PI*d).toFixed(2)+" cm</b>";}
   else b.style.display="none";
 }
-function calcEnsaio(){var c=parseFloat(gv("in_carga"));if(c>0)sv("in_cens",(c*2).toFixed(2));}
+function calcEnsaio(){
+  var c=parseFloat(gv("in_carga").replace(",","."));
+  if(c>0)sv("in_cens",(c*2).toFixed(2));
+}
 function atualizaCtr(){document.getElementById("golpe_ctr").textContent="Passo 3 de 4 · Golpe "+(golpes.length+1);}
 
 function getDims(){
@@ -318,9 +328,9 @@ function getDims(){
 }
 
 function addGolpe(){
-  var g=Object.assign({"Projeto":dados.projeto,"Cidade":dados.cidade,"Estaca":dados.estaca,"Tipo Estaca":dados.tipo,"Data":dados.data,"Hora":dados.hora,"Comp. Util [m]":gv("in_comp"),"Carga Trab. [tf]":gv("in_carga"),"Carga Ensaio [tf]":gv("in_cens"),"Alt. Golpe [cm]":gv("in_alt"),"Nega [mm]":gv("in_nega"),"EMX [tn.m]":gv("in_emx"),"RMX [tn]":gv("in_rmx"),"DMX [mm]":gv("in_dmx")},getDims());
+  var g=Object.assign({"Projeto":dados.projeto,"Cidade":dados.cidade,"Estaca":dados.estaca,"Tipo Estaca":dados.tipo,"Data":dados.data,"Hora":dados.hora,"Comp. Util [m]":dados.comp,"Carga Trab. [tf]":dados.carga,"Carga Ensaio [tf]":dados.cens,"Alt. Queda [cm]":gv("in_alt"),"Nega [mm]":gv("in_nega"),"EMX [tn.m]":gv("in_emx"),"RMX [tn]":gv("in_rmx"),"DMX [mm]":gv("in_dmx")},getDims());
   golpes.push(g);
-  ["in_comp","in_carga","in_cens","in_alt","in_nega","in_emx","in_rmx","in_dmx"].forEach(function(id){sv(id,"");});
+  ["in_alt","in_nega","in_emx","in_rmx","in_dmx"].forEach(function(id){sv(id,"");});
   atualizaCtr();toast("Golpe "+golpes.length+" adicionado","#1A6FC4");
 }
 
@@ -328,10 +338,10 @@ function irParaResumo(){
   if(!golpes.length){toast("Adicione pelo menos um golpe","#E24B4A");return;}
   document.getElementById("res_titulo").textContent=(dados.projeto||"Sem nome")+" · "+(dados.estaca||"Sem estaca");
   document.getElementById("res_sub").textContent=golpes.length+" golpe(s) · "+(dados.cidade?dados.cidade+" · ":"")+dados.data+" "+dados.hora;
-  var rows=[["Projeto",dados.projeto||"—"],["Cidade",dados.cidade||"—"],["Estaca",dados.estaca||"—"],["Tipo",dados.tipo],["Data",dados.data],["Hora",dados.hora]];
+  var rows=[["Projeto",dados.projeto||"—"],["Cidade",dados.cidade||"—"],["Estaca",dados.estaca||"—"],["Tipo",dados.tipo],["Comp. Útil",dados.comp?(dados.comp+" m"):"—"],["Carga Trab.",dados.carga?(dados.carga+" tf"):"—"],["Carga Ensaio",dados.cens?(dados.cens+" tf"):"—"],["Data",dados.data],["Hora",dados.hora]];
   document.getElementById("res_dados").innerHTML="<div class=\"card\" style=\"margin-bottom:.75rem\">"+rows.map(function(r){return"<div class=\"sum-row\"><span class=\"sum-lbl\">"+r[0]+"</span><span class=\"sum-val\">"+r[1]+"</span></div>";}).join("")+"</div>";
   document.getElementById("res_golpes").innerHTML=golpes.map(function(g,i){
-    var info=[g["Comp. Util [m]"]?"Comp: "+g["Comp. Util [m]"]+"m":"",g["Carga Trab. [tf]"]?"Carga: "+g["Carga Trab. [tf]"]+"tf":"",g["Nega [mm]"]?"Nega: "+g["Nega [mm]"]+"mm":""].filter(Boolean).join(" · ")||"—";
+    var info=[g["Alt. Queda [cm]"]?"Alt: "+g["Alt. Queda [cm]"]+"cm":"",g["Nega [mm]"]?"Nega: "+g["Nega [mm]"]+"mm":"",g["EMX [tn.m]"]?"EMX: "+g["EMX [tn.m]"]:""].filter(Boolean).join(" · ")||"—";
     return"<div class=\"golpe-item\"><div><div class=\"golpe-num\">Golpe "+(i+1)+"</div><div class=\"golpe-info\">"+info+"</div></div><button class=\"del-btn\" onclick=\"remGolpe("+i+")\">✕</button></div>";
   }).join("");
   irPara("s4");
@@ -364,10 +374,17 @@ function expPDF(){
   var dimKeys=["Diametro [cm]","Area [cm2]","Perimetro [cm]","Perfil","Trilho","d [mm]","bf [mm]","tw [mm]","tf [mm]","h [mm]","Massa Linear [kg/m]","D Externo [cm]","D Interno [cm]"];
   var dp=[];dimKeys.forEach(function(k){if(g0[k])dp.push(k+": "+g0[k]);});
   if(dp.length){doc.setTextColor(60,60,60);doc.setFontSize(8);doc.setFont("helvetica","normal");doc.text(dp.join("   "),14,26);}
-  var cm=[["#","#"],["Comp. Util [m]","Comp.\nUtil (m)"],["Carga Trab. [tf]","Carga\nTrab. (tf)"],["Carga Ensaio [tf]","Carga\nEnsaio (tf)"],["Alt. Golpe [cm]","Alt.\nGolpe (cm)"],["Nega [mm]","Nega\n(mm)"],["EMX [tn.m]","EMX\n(tn.m)"],["RMX [tn]","RMX\n(tn)"],["DMX [mm]","DMX\n(mm)"]];
+  // linha extra com dados fixos da estaca
+  var fixos=[];
+  if(dados.comp)fixos.push("Comp. Útil: "+dados.comp+" m");
+  if(dados.carga)fixos.push("Carga Trab.: "+dados.carga+" tf");
+  if(dados.cens)fixos.push("Carga Ensaio: "+dados.cens+" tf");
+  if(fixos.length){doc.setTextColor(60,60,60);doc.setFontSize(8);doc.text(fixos.join("   "),14,dp.length?31:26);}
+  var startY=(dp.length&&fixos.length)?36:(dp.length||fixos.length)?31:23;
+  var cm=[["#","#"],["Alt. Queda [cm]","Alt.\nQueda (cm)"],["Nega [mm]","Nega\n(mm)"],["EMX [tn.m]","EMX\n(tn.m)"],["RMX [tn]","RMX\n(tn)"],["DMX [mm]","DMX\n(mm)"]];
   var head=[cm.map(function(c){return c[1];})];
   var body=golpes.map(function(g,i){return cm.map(function(c){return c[0]==="#"?String(i+1):String(g[c[0]]||"");});});
-  doc.autoTable({head:head,body:body,startY:dp.length?31:23,styles:{fontSize:8,cellPadding:2,halign:"center",valign:"middle"},headStyles:{fillColor:[26,111,196],textColor:255,fontStyle:"bold",halign:"center"},alternateRowStyles:{fillColor:[240,250,245]},margin:{left:14,right:14},didDrawPage:function(){var pg=doc.internal.getCurrentPageInfo().pageNumber,tot=doc.internal.getNumberOfPages();doc.setFontSize(7);doc.setTextColor(150,150,150);doc.text("Pagina "+pg+"/"+tot+"  |  "+new Date().toLocaleString("pt-BR"),W/2,doc.internal.pageSize.getHeight()-4,{align:"center"});}});
+  doc.autoTable({head:head,body:body,startY:startY,styles:{fontSize:8,cellPadding:2,halign:"center",valign:"middle"},headStyles:{fillColor:[26,111,196],textColor:255,fontStyle:"bold",halign:"center"},alternateRowStyles:{fillColor:[240,250,245]},margin:{left:14,right:14},didDrawPage:function(){var pg=doc.internal.getCurrentPageInfo().pageNumber,tot=doc.internal.getNumberOfPages();doc.setFontSize(7);doc.setTextColor(150,150,150);doc.text("Pagina "+pg+"/"+tot+"  |  "+new Date().toLocaleString("pt-BR"),W/2,doc.internal.pageSize.getHeight()-4,{align:"center"});}});
   doc.save(nomeArq("pdf"));toast("PDF salvo!","#C0392B");
 }
 
