@@ -171,7 +171,16 @@ input:focus,select:focus{outline:none;border-color:#1A6FC4;background:#fff}
       <div><label>EMX (tn.m)</label><input type="text" inputmode="decimal" id="in_emx"></div>
       <div><label>RMX (tn)</label><input type="text" inputmode="decimal" id="in_rmx"></div>
     </div>
-    <label>DMX (mm)</label><input type="text" inputmode="decimal" id="in_dmx">
+    <div class="row">
+  <div>
+    <label>DMX (mm)</label>
+    <input type="text" inputmode="decimal" id="in_dmx">
+  </div>
+  <div>
+    <label>BTA</label>
+    <input type="text" inputmode="decimal" id="in_bta">
+  </div>
+</div>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn btn-secondary" onclick="irPara('s2')" style="flex:1;margin-top:0">← Voltar</button>
       <button class="btn btn-primary" onclick="addGolpe()" style="flex:2;margin-top:0">+ Adicionar golpe</button>
@@ -328,9 +337,11 @@ function getDims(){
 }
 
 function addGolpe(){
-  var g=Object.assign({"Projeto":dados.projeto,"Cidade":dados.cidade,"Estaca":dados.estaca,"Tipo Estaca":dados.tipo,"Data":dados.data,"Hora":dados.hora,"Comprimento Util [m]":dados.comp,"Carga de Trabalho [tf]":dados.carga,"Carga de Ensaio [tf]":dados.cens,"Altura de Queda [cm]":gv("in_alt"),"Nega [mm]":gv("in_nega"),"EMX [tn.m]":gv("in_emx"),"RMX [tn]":gv("in_rmx"),"DMX [mm]":gv("in_dmx")},getDims());
+  var g=Object.assign({"Projeto":dados.projeto,"Cidade":dados.cidade,"Estaca":dados.estaca,"Tipo Estaca":dados.tipo,"Data":dados.data,"Hora":dados.hora,"Comprimento Util [m]":dados.comp,"Carga de Trabalho [tf]":dados.carga,"Carga de Ensaio [tf]":dados.cens,"Altura de Queda [cm]":gv("in_alt"),"Nega [mm]":gv("in_nega"),"EMX [tn.m]":gv("in_emx"),"RMX [tn]":gv("in_rmx"),
+"DMX [mm]":gv("in_dmx"),
+"BTA":gv("in_bta")},getDims());
   golpes.push(g);
-  ["in_alt","in_nega","in_emx","in_rmx","in_dmx"].forEach(function(id){sv(id,"");});
+  ["in_alt","in_nega","in_emx","in_rmx","in_dmx","in_bta"].forEach(function(id){sv(id,"");});
   atualizaCtr();toast("Golpe "+golpes.length+" adicionado","#1A6FC4");
 }
 
