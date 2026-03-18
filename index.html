@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="PDA App">
 <meta name="theme-color" content="#1A6FC4">
-<title>Registro PDA</title>
+<title>Registro Método CASE - PDA</title>
 <link rel="manifest" id="manifest-placeholder">
 <link rel="apple-touch-icon" href="https://victortlacerda.github.io/app-pda/icone.png">
 <link rel="icon" type="image/png" href="https://victortlacerda.github.io/app-pda/icone.png">
@@ -171,7 +171,10 @@ input:focus,select:focus{outline:none;border-color:#1A6FC4;background:#fff}
       <div><label>EMX (tn.m)</label><input type="text" inputmode="decimal" id="in_emx"></div>
       <div><label>RMX (tn)</label><input type="text" inputmode="decimal" id="in_rmx"></div>
     </div>
-    <label>DMX (mm)</label><input type="text" inputmode="decimal" id="in_dmx">
+    <div class="row">
+      <div><label>DMX (mm)</label><input type="text" inputmode="decimal" id="in_dmx"></div>
+      <div><label>BTA [%]</label><input type="text" inputmode="decimal" id="in_bta"></div>
+    </div>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn btn-secondary" onclick="irPara('s2')" style="flex:1;margin-top:0">← Voltar</button>
       <button class="btn btn-primary" onclick="addGolpe()" style="flex:2;margin-top:0">+ Adicionar golpe</button>
@@ -211,126 +214,103 @@ var MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto
 var MET=[{"nome":"HP 200 x 53,0 (H)","massa":53,"d_mm":204,"bf_mm":207,"tw_mm":11.3,"tf_mm":11.3,"h_mm":181,"area_cm2":68.1,"perimetro_cm":120},{"nome":"HP 250 x 62,0 (H)","massa":62,"d_mm":246,"bf_mm":256,"tw_mm":10.5,"tf_mm":10.7,"h_mm":225,"area_cm2":79.6,"perimetro_cm":147},{"nome":"HP 250 x 85,0 (H)","massa":85,"d_mm":254,"bf_mm":260,"tw_mm":14.4,"tf_mm":14.4,"h_mm":225,"area_cm2":108.5,"perimetro_cm":150},{"nome":"HP 310 x 110,0 (H)","massa":110,"d_mm":308,"bf_mm":310,"tw_mm":15.4,"tf_mm":15.5,"h_mm":277,"area_cm2":141,"perimetro_cm":180},{"nome":"HP 310 x 125,0 (H)","massa":125,"d_mm":312,"bf_mm":312,"tw_mm":17.4,"tf_mm":17.4,"h_mm":277,"area_cm2":159,"perimetro_cm":181},{"nome":"HP 310 x 79,0 (H)","massa":79,"d_mm":299,"bf_mm":306,"tw_mm":11,"tf_mm":11,"h_mm":277,"area_cm2":100,"perimetro_cm":177},{"nome":"HP 310 x 93,0 (H)","massa":93,"d_mm":303,"bf_mm":308,"tw_mm":13.1,"tf_mm":13.1,"h_mm":277,"area_cm2":119.2,"perimetro_cm":178},{"nome":"W 150 x 13,0","massa":13,"d_mm":148,"bf_mm":100,"tw_mm":4.3,"tf_mm":4.9,"h_mm":138,"area_cm2":16.6,"perimetro_cm":67},{"nome":"W 150 x 18,0","massa":18,"d_mm":153,"bf_mm":102,"tw_mm":5.8,"tf_mm":7.1,"h_mm":139,"area_cm2":23.4,"perimetro_cm":69},{"nome":"W 150 x 22,5 (H)","massa":22.5,"d_mm":152,"bf_mm":152,"tw_mm":5.8,"tf_mm":6.6,"h_mm":139,"area_cm2":29,"perimetro_cm":88},{"nome":"W 150 x 24,0","massa":24,"d_mm":160,"bf_mm":102,"tw_mm":6.6,"tf_mm":10.3,"h_mm":139,"area_cm2":31.5,"perimetro_cm":69},{"nome":"W 150 x 29,8 (H)","massa":29.8,"d_mm":157,"bf_mm":153,"tw_mm":6.6,"tf_mm":9.3,"h_mm":138,"area_cm2":38.5,"perimetro_cm":90},{"nome":"W 150 x 37,1 (H)","massa":37.1,"d_mm":162,"bf_mm":154,"tw_mm":8.1,"tf_mm":11.6,"h_mm":139,"area_cm2":47.8,"perimetro_cm":91},{"nome":"W 200 x 15,0","massa":15,"d_mm":200,"bf_mm":100,"tw_mm":4.3,"tf_mm":5.2,"h_mm":190,"area_cm2":19.4,"perimetro_cm":77},{"nome":"W 200 x 19,3","massa":19.3,"d_mm":203,"bf_mm":102,"tw_mm":5.8,"tf_mm":6.5,"h_mm":190,"area_cm2":25.1,"perimetro_cm":79},{"nome":"W 200 x 22,5","massa":22.5,"d_mm":206,"bf_mm":102,"tw_mm":6.2,"tf_mm":8,"h_mm":190,"area_cm2":29,"perimetro_cm":79},{"nome":"W 200 x 26,6","massa":26.6,"d_mm":207,"bf_mm":133,"tw_mm":5.8,"tf_mm":8.4,"h_mm":190,"area_cm2":34.2,"perimetro_cm":92},{"nome":"W 200 x 31,3","massa":31.3,"d_mm":210,"bf_mm":134,"tw_mm":6.4,"tf_mm":10.2,"h_mm":190,"area_cm2":40.3,"perimetro_cm":93},{"nome":"W 200 x 35,9 (H)","massa":35.9,"d_mm":201,"bf_mm":165,"tw_mm":6.2,"tf_mm":10.2,"h_mm":181,"area_cm2":45.7,"perimetro_cm":103},{"nome":"W 200 x 41,7 (H)","massa":41.7,"d_mm":205,"bf_mm":166,"tw_mm":7.2,"tf_mm":11.8,"h_mm":181,"area_cm2":53.5,"perimetro_cm":104},{"nome":"W 200 x 46,1 (H)","massa":46.1,"d_mm":203,"bf_mm":203,"tw_mm":7.2,"tf_mm":11,"h_mm":181,"area_cm2":58.6,"perimetro_cm":119},{"nome":"W 200 x 52,0 (H)","massa":52,"d_mm":206,"bf_mm":204,"tw_mm":7.9,"tf_mm":12.6,"h_mm":181,"area_cm2":66.9,"perimetro_cm":119},{"nome":"W 200 x 59,0 (H)","massa":59,"d_mm":210,"bf_mm":205,"tw_mm":9.1,"tf_mm":14.2,"h_mm":182,"area_cm2":76,"perimetro_cm":120},{"nome":"W 200 x 71,0 (H)","massa":71,"d_mm":216,"bf_mm":206,"tw_mm":10.2,"tf_mm":17.4,"h_mm":181,"area_cm2":91,"perimetro_cm":122},{"nome":"W 200 x 86,0 (H)","massa":86,"d_mm":222,"bf_mm":209,"tw_mm":13,"tf_mm":20.6,"h_mm":181,"area_cm2":110.9,"perimetro_cm":123},{"nome":"W 250 x 17,9","massa":17.9,"d_mm":251,"bf_mm":101,"tw_mm":4.8,"tf_mm":5.3,"h_mm":240,"area_cm2":23.1,"perimetro_cm":88},{"nome":"W 250 x 22,3","massa":22.3,"d_mm":254,"bf_mm":102,"tw_mm":5.8,"tf_mm":6.9,"h_mm":240,"area_cm2":28.9,"perimetro_cm":89},{"nome":"W 250 x 25,3","massa":25.3,"d_mm":257,"bf_mm":102,"tw_mm":6.1,"tf_mm":8.4,"h_mm":240,"area_cm2":32.6,"perimetro_cm":89},{"nome":"W 250 x 28,4","massa":28.4,"d_mm":260,"bf_mm":102,"tw_mm":6.4,"tf_mm":10,"h_mm":240,"area_cm2":36.6,"perimetro_cm":90},{"nome":"W 250 x 32,7","massa":32.7,"d_mm":258,"bf_mm":146,"tw_mm":6.1,"tf_mm":9.1,"h_mm":240,"area_cm2":42.1,"perimetro_cm":107},{"nome":"W 250 x 38,5","massa":38.5,"d_mm":262,"bf_mm":147,"tw_mm":6.6,"tf_mm":11.2,"h_mm":240,"area_cm2":49.6,"perimetro_cm":108},{"nome":"W 250 x 44,8","massa":44.8,"d_mm":266,"bf_mm":148,"tw_mm":7.6,"tf_mm":13,"h_mm":240,"area_cm2":57.6,"perimetro_cm":109},{"nome":"W 250 x 73,0 (H)","massa":73,"d_mm":253,"bf_mm":254,"tw_mm":8.6,"tf_mm":14.2,"h_mm":225,"area_cm2":92.7,"perimetro_cm":148},{"nome":"W 250 x 80,0 (H)","massa":80,"d_mm":256,"bf_mm":255,"tw_mm":9.4,"tf_mm":15.6,"h_mm":225,"area_cm2":101.9,"perimetro_cm":149},{"nome":"W 250 x 89,0 (H)","massa":89,"d_mm":260,"bf_mm":256,"tw_mm":10.7,"tf_mm":17.3,"h_mm":225,"area_cm2":113.9,"perimetro_cm":150},{"nome":"W 250 x 101,0 (H)","massa":101,"d_mm":264,"bf_mm":257,"tw_mm":11.9,"tf_mm":19.6,"h_mm":225,"area_cm2":128.7,"perimetro_cm":151},{"nome":"W 250 x 115,0 (H)","massa":115,"d_mm":269,"bf_mm":259,"tw_mm":13.5,"tf_mm":22.1,"h_mm":225,"area_cm2":146.1,"perimetro_cm":153},{"nome":"W 310 x 21,0","massa":21,"d_mm":303,"bf_mm":101,"tw_mm":5.1,"tf_mm":5.7,"h_mm":292,"area_cm2":27.2,"perimetro_cm":98},{"nome":"W 310 x 23,8","massa":23.8,"d_mm":305,"bf_mm":101,"tw_mm":5.6,"tf_mm":6.7,"h_mm":292,"area_cm2":30.7,"perimetro_cm":99},{"nome":"W 310 x 28,3","massa":28.3,"d_mm":309,"bf_mm":102,"tw_mm":6,"tf_mm":8.9,"h_mm":291,"area_cm2":36.5,"perimetro_cm":100},{"nome":"W 310 x 32,7","massa":32.7,"d_mm":313,"bf_mm":102,"tw_mm":6.6,"tf_mm":10.8,"h_mm":291,"area_cm2":42.1,"perimetro_cm":100},{"nome":"W 310 x 38,7","massa":38.7,"d_mm":310,"bf_mm":165,"tw_mm":5.8,"tf_mm":9.7,"h_mm":291,"area_cm2":49.7,"perimetro_cm":125},{"nome":"W 310 x 44,5","massa":44.5,"d_mm":313,"bf_mm":166,"tw_mm":6.6,"tf_mm":11.2,"h_mm":291,"area_cm2":57.2,"perimetro_cm":126},{"nome":"W 310 x 52,0","massa":52,"d_mm":317,"bf_mm":167,"tw_mm":7.6,"tf_mm":13.2,"h_mm":291,"area_cm2":67,"perimetro_cm":127},{"nome":"W 310 x 97,0 (H)","massa":97,"d_mm":308,"bf_mm":305,"tw_mm":9.9,"tf_mm":15.4,"h_mm":277,"area_cm2":123.6,"perimetro_cm":179},{"nome":"W 310 x 107,0 (H)","massa":107,"d_mm":311,"bf_mm":306,"tw_mm":10.9,"tf_mm":17,"h_mm":277,"area_cm2":136.4,"perimetro_cm":180},{"nome":"W 310 x 117,0 (H)","massa":117,"d_mm":314,"bf_mm":307,"tw_mm":11.9,"tf_mm":18.7,"h_mm":277,"area_cm2":149.9,"perimetro_cm":180},{"nome":"W 360 x 32,9","massa":32.9,"d_mm":349,"bf_mm":127,"tw_mm":5.8,"tf_mm":8.5,"h_mm":332,"area_cm2":42.1,"perimetro_cm":117},{"nome":"W 360 x 39,0","massa":39,"d_mm":353,"bf_mm":128,"tw_mm":6.5,"tf_mm":10.7,"h_mm":332,"area_cm2":50.2,"perimetro_cm":118},{"nome":"W 360 x 44,0","massa":44,"d_mm":352,"bf_mm":171,"tw_mm":6.9,"tf_mm":9.8,"h_mm":332,"area_cm2":57.7,"perimetro_cm":135},{"nome":"W 360 x 51,0","massa":51,"d_mm":355,"bf_mm":171,"tw_mm":7.2,"tf_mm":11.6,"h_mm":332,"area_cm2":64.8,"perimetro_cm":136},{"nome":"W 360 x 57,8","massa":57.8,"d_mm":358,"bf_mm":172,"tw_mm":7.9,"tf_mm":13.1,"h_mm":332,"area_cm2":72.5,"perimetro_cm":137},{"nome":"W 360 x 64,0","massa":64,"d_mm":347,"bf_mm":203,"tw_mm":7.7,"tf_mm":13.5,"h_mm":320,"area_cm2":81.7,"perimetro_cm":146},{"nome":"W 360 x 72,0","massa":72,"d_mm":350,"bf_mm":204,"tw_mm":8.6,"tf_mm":15.1,"h_mm":320,"area_cm2":91.3,"perimetro_cm":147},{"nome":"W 360 x 79,0","massa":79,"d_mm":354,"bf_mm":205,"tw_mm":9.4,"tf_mm":16.8,"h_mm":320,"area_cm2":101.2,"perimetro_cm":148},{"nome":"W 360 x 91,0 (H)","massa":91,"d_mm":353,"bf_mm":254,"tw_mm":9.5,"tf_mm":16.4,"h_mm":320,"area_cm2":115.9,"perimetro_cm":168},{"nome":"W 360 x 101,0 (H)","massa":101,"d_mm":357,"bf_mm":255,"tw_mm":10.5,"tf_mm":18.3,"h_mm":320,"area_cm2":129.5,"perimetro_cm":168},{"nome":"W 360 x 110,0 (H)","massa":110,"d_mm":360,"bf_mm":256,"tw_mm":11.4,"tf_mm":19.9,"h_mm":320,"area_cm2":140.6,"perimetro_cm":169},{"nome":"W 360 x 122,0 (H)","massa":122,"d_mm":363,"bf_mm":257,"tw_mm":13,"tf_mm":21.7,"h_mm":320,"area_cm2":155.3,"perimetro_cm":170},{"nome":"W 410 x 38,8","massa":38.8,"d_mm":399,"bf_mm":140,"tw_mm":6.4,"tf_mm":8.8,"h_mm":381,"area_cm2":50.3,"perimetro_cm":132},{"nome":"W 410 x 46,1","massa":46.1,"d_mm":403,"bf_mm":140,"tw_mm":7,"tf_mm":11.2,"h_mm":381,"area_cm2":59.2,"perimetro_cm":133},{"nome":"W 410 x 53,0","massa":53,"d_mm":403,"bf_mm":177,"tw_mm":7.5,"tf_mm":10.9,"h_mm":381,"area_cm2":68.4,"perimetro_cm":148},{"nome":"W 410 x 60,0","massa":60,"d_mm":407,"bf_mm":178,"tw_mm":7.7,"tf_mm":12.8,"h_mm":381,"area_cm2":76.2,"perimetro_cm":149},{"nome":"W 410 x 67,0","massa":67,"d_mm":410,"bf_mm":179,"tw_mm":8.8,"tf_mm":14.4,"h_mm":381,"area_cm2":86.3,"perimetro_cm":150},{"nome":"W 410 x 75,0","massa":75,"d_mm":413,"bf_mm":180,"tw_mm":9.7,"tf_mm":16,"h_mm":381,"area_cm2":95.8,"perimetro_cm":151},{"nome":"W 410 x 85,0","massa":85,"d_mm":417,"bf_mm":181,"tw_mm":10.9,"tf_mm":18.2,"h_mm":381,"area_cm2":108.6,"perimetro_cm":152},{"nome":"W 460 x 52,0","massa":52,"d_mm":450,"bf_mm":152,"tw_mm":7.6,"tf_mm":10.8,"h_mm":428,"area_cm2":66.6,"perimetro_cm":147},{"nome":"W 460 x 60,0","massa":60,"d_mm":455,"bf_mm":153,"tw_mm":8,"tf_mm":13.3,"h_mm":428,"area_cm2":76.2,"perimetro_cm":149},{"nome":"W 460 x 68,0","massa":68,"d_mm":459,"bf_mm":154,"tw_mm":9.1,"tf_mm":15.4,"h_mm":428,"area_cm2":87.6,"perimetro_cm":150},{"nome":"W 460 x 74,0","massa":74,"d_mm":457,"bf_mm":190,"tw_mm":9,"tf_mm":14.5,"h_mm":428,"area_cm2":94.9,"perimetro_cm":164},{"nome":"W 460 x 82,0","massa":82,"d_mm":460,"bf_mm":191,"tw_mm":9.9,"tf_mm":16,"h_mm":428,"area_cm2":104.7,"perimetro_cm":164},{"nome":"W 460 x 89,0","massa":89,"d_mm":463,"bf_mm":192,"tw_mm":10.5,"tf_mm":17.7,"h_mm":428,"area_cm2":114.1,"perimetro_cm":165},{"nome":"W 460 x 97,0","massa":97,"d_mm":466,"bf_mm":193,"tw_mm":11.4,"tf_mm":19,"h_mm":428,"area_cm2":123.4,"perimetro_cm":166},{"nome":"W 460 x 106,0","massa":106,"d_mm":469,"bf_mm":194,"tw_mm":12.6,"tf_mm":20.6,"h_mm":428,"area_cm2":135.1,"perimetro_cm":167},{"nome":"W 530 x 66,0","massa":66,"d_mm":525,"bf_mm":165,"tw_mm":8.9,"tf_mm":11.4,"h_mm":502,"area_cm2":83.6,"perimetro_cm":167},{"nome":"W 530 x 72,0","massa":72,"d_mm":524,"bf_mm":207,"tw_mm":9,"tf_mm":10.9,"h_mm":502,"area_cm2":91.6,"perimetro_cm":184},{"nome":"W 530 x 74,0","massa":74,"d_mm":529,"bf_mm":166,"tw_mm":9.7,"tf_mm":13.6,"h_mm":502,"area_cm2":95.1,"perimetro_cm":168},{"nome":"W 530 x 82,0","massa":82,"d_mm":528,"bf_mm":209,"tw_mm":9.5,"tf_mm":13.3,"h_mm":501,"area_cm2":104.5,"perimetro_cm":185},{"nome":"W 530 x 85,0","massa":85,"d_mm":535,"bf_mm":166,"tw_mm":10.3,"tf_mm":16.5,"h_mm":502,"area_cm2":107.7,"perimetro_cm":169},{"nome":"W 530 x 92,0","massa":92,"d_mm":533,"bf_mm":209,"tw_mm":10.2,"tf_mm":15.6,"h_mm":502,"area_cm2":117.6,"perimetro_cm":186},{"nome":"W 530 x 101,0","massa":101,"d_mm":537,"bf_mm":210,"tw_mm":10.9,"tf_mm":17.4,"h_mm":502,"area_cm2":130,"perimetro_cm":186},{"nome":"W 530 x 109,0","massa":109,"d_mm":539,"bf_mm":211,"tw_mm":11.6,"tf_mm":18.8,"h_mm":501,"area_cm2":139.7,"perimetro_cm":187},{"nome":"W 610 x 101,0","massa":101,"d_mm":603,"bf_mm":228,"tw_mm":10.5,"tf_mm":14.9,"h_mm":573,"area_cm2":130.3,"perimetro_cm":207},{"nome":"W 610 x 113,0","massa":113,"d_mm":608,"bf_mm":228,"tw_mm":11.2,"tf_mm":17.3,"h_mm":573,"area_cm2":145.3,"perimetro_cm":208},{"nome":"W 610 x 125,0","massa":125,"d_mm":612,"bf_mm":229,"tw_mm":11.9,"tf_mm":19.6,"h_mm":573,"area_cm2":160.1,"perimetro_cm":209},{"nome":"W 610 x 140,0","massa":140,"d_mm":617,"bf_mm":230,"tw_mm":13.1,"tf_mm":22.2,"h_mm":573,"area_cm2":179.3,"perimetro_cm":210},{"nome":"W 610 x 155,0","massa":155,"d_mm":611,"bf_mm":324,"tw_mm":12.7,"tf_mm":19,"h_mm":573,"area_cm2":198.1,"perimetro_cm":247},{"nome":"W 610 x 174,0","massa":174,"d_mm":616,"bf_mm":325,"tw_mm":14,"tf_mm":21.6,"h_mm":573,"area_cm2":222.8,"perimetro_cm":248}];
 function massaTR(n){var m=n.match(/^TR\s+(\d+(?:[,.]\d+)?)\s/i);return m?parseFloat(m[1].replace(',','.')):null;}
 var TRI=[{"nome":"A 100","area_cm2":null,"perimetro_cm":null},{"nome":"A 120","area_cm2":null,"perimetro_cm":null},{"nome":"A 150","area_cm2":null,"perimetro_cm":null},{"nome":"A 45","area_cm2":null,"perimetro_cm":null},{"nome":"A 55","area_cm2":null,"perimetro_cm":null},{"nome":"A 65","area_cm2":null,"perimetro_cm":null},{"nome":"A 75","area_cm2":null,"perimetro_cm":null},{"nome":"CR 104","area_cm2":null,"perimetro_cm":null},{"nome":"CR 105 (TR52)","area_cm2":null,"perimetro_cm":null},{"nome":"CR 135","area_cm2":null,"perimetro_cm":null},{"nome":"CR 171","area_cm2":null,"perimetro_cm":null},{"nome":"CR 175 (TR 87)","area_cm2":null,"perimetro_cm":null},{"nome":"TR 25 ASCE 5040","area_cm2":31.5,"perimetro_cm":42.33},{"nome":"TR 30 ASCE 6040","area_cm2":38.39,"perimetro_cm":46.4},{"nome":"TR 32 ASCE 6540","area_cm2":40.8,"perimetro_cm":48.68},{"nome":"TR 37 ASCE 7540","area_cm2":47.3,"perimetro_cm":51.66},{"nome":"TR 40 ASCE 8040","area_cm2":50.71,"perimetro_cm":53.6},{"nome":"TR 45 ASCE 90 ARA-A","area_cm2":56.9,"perimetro_cm":59.23},{"nome":"TR 50 ASCE 100 RE","area_cm2":64.2,"perimetro_cm":62.87},{"nome":"TR 57 ASCE 115 RE","area_cm2":72.5,"perimetro_cm":67.99},{"nome":"TR 68 ASCE 136 RE","area_cm2":86.1,"perimetro_cm":74.8}].map(function(t){return Object.assign({},t,{massa:massaTR(t.nome)});});
-var PRE=[{"nome": "FOÁ ARMADA ESTRELA ETR 525", "dext_cm": 52.5, "dint_cm":null, "area_cm2": 1055.7, "perimetro_cm": 178.9}, {"nome": "FOÁ ARMADA ESTRELA ETR 605", "dext_cm": 60.8, "dint_cm":null, "area_cm2": 1343, "perimetro_cm": 219}, {"nome": "FOÁ ARMADA ESTRELA ETR 707", "dext_cm": 70.7, "dint_cm":null, "area_cm2": 1655, "perimetro_cm": 264.6}, {"nome": "FOÁ ARMADA ESTRELA ETR 809", "dext_cm": 80.9, "dint_cm":null, "area_cm2": 2190, "perimetro_cm": 296.8}, {"nome": "FOÁ PROTENDIDA ESTRELA 17 x 17", "dext_cm":null, "dint_cm":null, "area_cm2": 289, "perimetro_cm": 68.1}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 229", "dext_cm": 22.9, "dint_cm":null, "area_cm2": 278, "perimetro_cm": 84.1}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 269", "dext_cm": 26.9, "dint_cm":null, "area_cm2": 368.5, "perimetro_cm": 93.1}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 298", "dext_cm": 29.8, "dint_cm":null, "area_cm2": 445, "perimetro_cm": 101.8}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 360", "dext_cm": 36, "dint_cm":null, "area_cm2": 581, "perimetro_cm": 128.7}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 406", "dext_cm": 40.6, "dint_cm":null, "area_cm2": 676, "perimetro_cm": 141.8}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 445", "dext_cm": 44.5, "dint_cm":null, "area_cm2": 856.5, "perimetro_cm": 162}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 525", "dext_cm": 52.5, "dint_cm":null, "area_cm2": 1055.7, "perimetro_cm": 178.9}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 707", "dext_cm": 70.7, "dint_cm":null, "area_cm2": 1655, "perimetro_cm": 264.8}, {"nome": "FOÁ PROTENDIDA ESTRELA ICP 360-I", "dext_cm":null, "dint_cm":null, "area_cm2": 528.1, "perimetro_cm": 142}, {"nome": "FOÁ PROTENDIDA ESTRELA ICP 360-II", "dext_cm":null, "dint_cm":null, "area_cm2": 528.1, "perimetro_cm": 142}, {"nome": "INCOPRE ARMADA CIRCULAR PLENA Φ 18", "dext_cm": 18, "dint_cm":null, "area_cm2": 254, "perimetro_cm": 57}, {"nome": "INCOPRE ARMADA CIRCULAR PLENA Φ 23", "dext_cm": 23, "dint_cm":null, "area_cm2": 415, "perimetro_cm": 72}, {"nome": "INCOPRE ARMADA CIRCULAR PLENA Φ 26", "dext_cm": 26, "dint_cm":null, "area_cm2": 531, "perimetro_cm": 82}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 33", "dext_cm": 33, "dint_cm": 27.66, "area_cm2": 601, "perimetro_cm": 104}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 38", "dext_cm": 38, "dint_cm": 30.98, "area_cm2": 754, "perimetro_cm": 119}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 42", "dext_cm": 42, "dint_cm": 33.76, "area_cm2": 895, "perimetro_cm": 132}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 50", "dext_cm": 50, "dint_cm": 40.01, "area_cm2": 1257, "perimetro_cm": 157}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 60", "dext_cm": 60, "dint_cm": 46.43, "area_cm2": 1693, "perimetro_cm": 188}, {"nome": "INCOPRE PROTENDIDA QUADRADA PLENA Q 17 X 17", "dext_cm": 17, "dint_cm":null, "area_cm2": 289, "perimetro_cm": 68}, {"nome": "INCOPRE PROTENDIDA QUADRADA PLENA Q 20 X 20", "dext_cm": 20, "dint_cm":null, "area_cm2": 400, "perimetro_cm": 80}, {"nome": "INCOPRE PROTENDIDA QUADRADA PLENA Q 23 X 23", "dext_cm": 23, "dint_cm":null, "area_cm2": 539, "perimetro_cm": 92}, {"nome": "INCOPRE PROTENDIDA QUADRADA PLENA Q 26 X 26", "dext_cm": 26, "dint_cm":null, "area_cm2": 676, "perimetro_cm": 104}, {"nome": "INCOPRE PROTENDIDA QUADRADA VAZADA Q 30 X 30", "dext_cm": 30, "dint_cm": 30.34, "area_cm2": 723, "perimetro_cm": 120}, {"nome": "PREFAZ ARMADA CIRCULAR PLENA 26", "dext_cm": 26, "dint_cm":null, "area_cm2": 531, "perimetro_cm": 82}, {"nome": "PREFAZ PROTENDIDA CIRCULAR VAZADA 34", "dext_cm": 34, "dint_cm": 18, "area_cm2": 653, "perimetro_cm": 107}, {"nome": "PREFAZ PROTENDIDA CIRCULAR VAZADA 38", "dext_cm": 38, "dint_cm": 21, "area_cm2": 788, "perimetro_cm": 119}, {"nome": "PREFAZ PROTENDIDA CIRCULAR VAZADA 40", "dext_cm": 40, "dint_cm": 24, "area_cm2": 804, "perimetro_cm": 126}, {"nome": "PREFAZ PROTENDIDA CIRCULAR VAZADA 42", "dext_cm": 42, "dint_cm": 24, "area_cm2": 933, "perimetro_cm": 132}, {"nome": "PREFAZ PROTENDIDA CIRCULAR VAZADA 50", "dext_cm": 50, "dint_cm": 31, "area_cm2": 1209, "perimetro_cm": 157}, {"nome": "PREFAZ PROTENDIDA CIRCULAR VAZADA 60", "dext_cm": 60, "dint_cm": 38, "area_cm2": 1693, "perimetro_cm": 188}, {"nome": "PREFAZ PROTENDIDA CIRCULAR VAZADA 70", "dext_cm": 70, "dint_cm": 46, "area_cm2": 2187, "perimetro_cm": 220}, {"nome": "PREFAZ PROTENDIDA QUADRADA PLENA 17", "dext_cm": 17, "dint_cm":null, "area_cm2": 289, "perimetro_cm": 68}, {"nome": "PREFAZ PROTENDIDA QUADRADA PLENA 20", "dext_cm": 20, "dint_cm":null, "area_cm2": 400, "perimetro_cm": 80}, {"nome": "PREFAZ PROTENDIDA QUADRADA PLENA 23", "dext_cm": 23, "dint_cm":null, "area_cm2": 529, "perimetro_cm": 92}, {"nome": "PREFAZ PROTENDIDA QUADRADA PLENA 26,5", "dext_cm": 26.5, "dint_cm":null, "area_cm2": 702, "perimetro_cm": 106}, {"nome": "PREFAZ PROTENDIDA QUADRADA PLENA 30", "dext_cm": 30, "dint_cm":null, "area_cm2": 900, "perimetro_cm": 120}, {"nome": "PREFAZ PROTENDIDA QUADRADA VAZADA 23", "dext_cm": 23, "dint_cm": 10, "area_cm2": 450, "perimetro_cm": 92}, {"nome": "PREFAZ PROTENDIDA QUADRADA VAZADA 26,5", "dext_cm": 26.5, "dint_cm": 12, "area_cm2": 589, "perimetro_cm": 106}, {"nome": "PREFAZ PROTENDIDA QUADRADA VAZADA 30", "dext_cm": 30, "dint_cm": 16, "area_cm2": 699, "perimetro_cm": 120}, {"nome": "PREFAZ PROTENDIDA QUADRADA VAZADA 34", "dext_cm": 34, "dint_cm": 20, "area_cm2": 842, "perimetro_cm": 136}, {"nome": "PREFAZ PROTENDIDA QUADRADA VAZADA 35", "dext_cm": 35, "dint_cm": 20, "area_cm2": 911, "perimetro_cm": 140}, {"nome": "PREFAZ PROTENDIDA QUADRADA VAZADA 37,5", "dext_cm": 37.5, "dint_cm": 23, "area_cm2": 991, "perimetro_cm": 150}];
-
-var dados={},golpes=[],selMet=null,selTri=null,selPre=null;
-var DB_MAP={"met":MET,"tri":TRI,"pre":PRE};
-
-function gv(id){var el=document.getElementById(id);return el?el.value:"";}
-function sv(id,v){var el=document.getElementById(id);if(el)el.value=(v==null?"":v);}
-function show(id,s){var el=document.getElementById(id);if(el)el.style.display=s?"block":"none";}
-
+var PRE=[{"nome": "FOÁ ARMADA ESTRELA ETR 525", "dext_cm": 52.5, "dint_cm":null, "area_cm2": 1055.7, "perimetro_cm": 178.9}, {"nome": "FOÁ ARMADA ESTRELA ETR 605", "dext_cm": 60.8, "dint_cm":null, "area_cm2": 1343, "perimetro_cm": 219}, {"nome": "FOÁ ARMADA ESTRELA ETR 707", "dext_cm": 70.7, "dint_cm":null, "area_cm2": 1655, "perimetro_cm": 264.6}, {"nome": "FOÁ ARMADA ESTRELA ETR 809", "dext_cm": 80.9, "dint_cm":null, "area_cm2": 2190, "perimetro_cm": 296.8}, {"nome": "FOÁ PROTENDIDA ESTRELA 17 x 17", "dext_cm":null, "dint_cm":null, "area_cm2": 289, "perimetro_cm": 68.1}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 229", "dext_cm": 22.9, "dint_cm":null, "area_cm2": 278, "perimetro_cm": 84.1}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 269", "dext_cm": 26.9, "dint_cm":null, "area_cm2": 368.5, "perimetro_cm": 93.1}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 298", "dext_cm": 29.8, "dint_cm":null, "area_cm2": 445, "perimetro_cm": 101.8}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 360", "dext_cm": 36, "dint_cm":null, "area_cm2": 581, "perimetro_cm": 128.7}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 406", "dext_cm": 40.6, "dint_cm":null, "area_cm2": 676, "perimetro_cm": 141.8}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 445", "dext_cm": 44.5, "dint_cm":null, "area_cm2": 856.5, "perimetro_cm": 162}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 525", "dext_cm": 52.5, "dint_cm":null, "area_cm2": 1055.7, "perimetro_cm": 178.9}, {"nome": "FOÁ PROTENDIDA ESTRELA ETR 707", "dext_cm": 70.7, "dint_cm":null, "area_cm2": 1655, "perimetro_cm": 264.8}, {"nome": "FOÁ PROTENDIDA ESTRELA ICP 360-I", "dext_cm":null, "dint_cm":null, "area_cm2": 528.1, "perimetro_cm": 142}, {"nome": "FOÁ PROTENDIDA ESTRELA ICP 360-II", "dext_cm":null, "dint_cm":null, "area_cm2": 528.1, "perimetro_cm": 142}, {"nome": "INCOPRE ARMADA CIRCULAR PLENA Φ 18", "dext_cm": 18, "dint_cm":null, "area_cm2": 254, "perimetro_cm": 57}, {"nome": "INCOPRE ARMADA CIRCULAR PLENA Φ 23", "dext_cm": 23, "dint_cm":null, "area_cm2": 415, "perimetro_cm": 72}, {"nome": "INCOPRE ARMADA CIRCULAR PLENA Φ 26", "dext_cm": 26, "dint_cm":null, "area_cm2": 531, "perimetro_cm": 82}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 33", "dext_cm": 33, "dint_cm": 27.66, "area_cm2": 601, "perimetro_cm": 104}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 38", "dext_cm": 38, "dint_cm": 30.9, "area_cm2": 795, "perimetro_cm": 120}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 43", "dext_cm": 43, "dint_cm": 35.2, "area_cm2": 1017, "perimetro_cm": 135}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 48", "dext_cm": 48, "dint_cm": 40, "area_cm2": 1257, "perimetro_cm": 151}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 53", "dext_cm": 53, "dint_cm": 45, "area_cm2": 1521, "perimetro_cm": 167}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 58", "dext_cm": 58, "dint_cm": 50, "area_cm2": 1810, "perimetro_cm": 183}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 63", "dext_cm": 63, "dint_cm": 55, "area_cm2": 2124, "perimetro_cm": 199}, {"nome": "INCOPRE ARMADA CIRCULAR VAZADA Φ 68", "dext_cm": 68, "dint_cm": 60, "area_cm2": 2463, "perimetro_cm": 215}];
+var golpes=[],dados={},selMet=null,selTri=null,selPre=null;
+function gv(id){return document.getElementById(id).value;}
+function sv(id,v){document.getElementById(id).value=v;}
+function show(id,b){document.getElementById(id).style.display=b?"block":"none";}
 function initDatas(){
-  var now=new Date();
-  var dia=document.getElementById("in_dia");
-  for(var i=1;i<=31;i++){var o=document.createElement("option");o.value=o.textContent=String(i).padStart(2,"0");dia.appendChild(o);}
-  dia.value=String(now.getDate()).padStart(2,"0");
-  var mes=document.getElementById("in_mes");
-  MESES.forEach(function(m,i){var o=document.createElement("option");o.value=String(i+1).padStart(2,"0");o.textContent=m;mes.appendChild(o);});
-  mes.value=String(now.getMonth()+1).padStart(2,"0");
-  var ano=document.getElementById("in_ano");
-  for(var a=now.getFullYear()-1;a<=now.getFullYear()+10;a++){var o=document.createElement("option");o.value=o.textContent=a;ano.appendChild(o);}
-  ano.value=now.getFullYear();
-  var hr=document.getElementById("in_hora");
-  for(var h=0;h<24;h++){var o=document.createElement("option");o.value=o.textContent=String(h).padStart(2,"0");hr.appendChild(o);}
-  hr.value=String(now.getHours()).padStart(2,"0");
-  var mn=document.getElementById("in_min");
-  for(var m=0;m<60;m++){var o=document.createElement("option");o.value=o.textContent=String(m).padStart(2,"0");mn.appendChild(o);}
-  mn.value="00";
+  var d=new Date(),y=d.getFullYear();
+  for(var i=1;i<=31;i++)document.getElementById("in_dia").innerHTML+="<option>"+i+"</option>";
+  for(var i=0;i<12;i++)document.getElementById("in_mes").innerHTML+="<option>"+(i+1)+"</option>";
+  for(var i=y-5;i<=y+5;i++)document.getElementById("in_ano").innerHTML+="<option>"+i+"</option>";
+  for(var i=0;i<24;i++)document.getElementById("in_hora").innerHTML+="<option>"+(i<10?"0":"")+i+"</option>";
+  for(var i=0;i<60;i+=15)document.getElementById("in_min").innerHTML+="<option>"+(i<10?"0":"")+i+"</option>";
+  document.getElementById("in_dia").value=d.getDate();
+  document.getElementById("in_mes").value=d.getMonth()+1;
+  document.getElementById("in_ano").value=y;
+  document.getElementById("in_hora").value="09";
+  document.getElementById("in_min").value="00";
 }
-
-function renderLista(tipo,filtro){
-  var arr=DB_MAP[tipo],f=(filtro||"").toLowerCase();
-  var list=document.getElementById("list_"+tipo);
-  var itens=arr.filter(function(x){return x.nome.toLowerCase().indexOf(f)>=0;});
-  if(!itens.length){list.innerHTML="<div class=\"picker-item\" style=\"color:#aaa\">Nenhum resultado</div>";return;}
-  var cur=(tipo==="met"&&selMet)?selMet.nome:(tipo==="tri"&&selTri)?selTri.nome:(tipo==="pre"&&selPre)?selPre.nome:"";
-  list.innerHTML=itens.map(function(x){
-    return "<div class=\"picker-item"+(cur===x.nome?" selected":"")+"\" onclick=\"selecionarItem('"+tipo+"','"+x.nome.replace(/\\/g,"\\\\").replace(/'/g,"\\'")+"')\">"+x.nome+"</div>";
-  }).join("");
-}
-function abrirLista(t){renderLista(t,gv("srch_"+t));show("list_"+t,true);}
-function filtrarLista(t){renderLista(t,gv("srch_"+t));show("list_"+t,true);}
-
-function selecionarItem(tipo,nome){
-  show("list_"+tipo,false);
-  if(tipo==="met"){
-    var p=MET.find(function(x){return x.nome===nome;});if(!p)return;
-    selMet=p;sv("srch_met",nome);
-    document.getElementById("sel_met_nome").textContent=nome;show("sel_met_nome",true);
-    sv("m_d",p.d_mm);sv("m_bf",p.bf_mm);sv("m_tw",p.tw_mm);sv("m_tf",p.tf_mm);
-    sv("m_h",p.h_mm);sv("m_massa",p.massa);sv("m_area",p.area_cm2);sv("m_perim",p.perimetro_cm);
-    var pts=[];if(p.area_cm2)pts.push("Área: "+p.area_cm2+" cm²");if(p.perimetro_cm)pts.push("Per.: "+p.perimetro_cm+" cm");if(p.massa)pts.push("Massa: "+p.massa+" kg/m");
-    var b=document.getElementById("bdg_met");if(pts.length){b.style.display="flex";b.innerHTML="<b>"+pts.join("</b> &nbsp;·&nbsp; <b>")+"</b>";}
-  } else if(tipo==="tri"){
-    var p=TRI.find(function(x){return x.nome===nome;});if(!p)return;
-    selTri=p;sv("srch_tri",nome);
-    document.getElementById("sel_tri_nome").textContent=nome;show("sel_tri_nome",true);
-    sv("t_area",p.area_cm2);sv("t_perim",p.perimetro_cm);sv("t_massa",p.massa);
-    var pts=[];if(p.massa)pts.push("Massa: "+p.massa+" kg/m");if(p.area_cm2)pts.push("Área: "+p.area_cm2+" cm²");if(p.perimetro_cm)pts.push("Per.: "+p.perimetro_cm+" cm");
-    var b=document.getElementById("bdg_tri");if(pts.length){b.style.display="flex";b.innerHTML="<b>"+pts.join("</b> &nbsp;·&nbsp; <b>")+"</b>";}else b.style.display="none";
-  } else {
-    var p=PRE.find(function(x){return x.nome===nome;});if(!p)return;
-    selPre=p;sv("srch_pre",nome);
-    document.getElementById("sel_pre_nome").textContent=nome;show("sel_pre_nome",true);
-    sv("p_dext",p.dext_cm);sv("p_dint",p.dint_cm);sv("p_area",p.area_cm2);sv("p_perim",p.perimetro_cm);
-    var pts=[];if(p.dext_cm)pts.push("D ext: "+p.dext_cm+" cm");if(p.dint_cm)pts.push("D int: "+p.dint_cm+" cm");if(p.area_cm2)pts.push("Área: "+p.area_cm2+" cm²");if(p.perimetro_cm)pts.push("Per.: "+p.perimetro_cm+" cm");
-    var b=document.getElementById("bdg_pre");if(pts.length){b.style.display="flex";b.innerHTML="<b>"+pts.join("</b> &nbsp;·&nbsp; <b>")+"</b>";}
-  }
-}
-
-document.addEventListener("click",function(e){
-  ["met","tri","pre"].forEach(function(t){
-    var w=document.getElementById("list_"+t),i=document.getElementById("srch_"+t);
-    if(w&&i&&!w.contains(e.target)&&e.target!==i)w.style.display="none";
-  });
-});
-
-function irPara(id){document.querySelectorAll(".screen").forEach(function(s){s.classList.remove("active");});document.getElementById(id).classList.add("active");window.scrollTo(0,0);}
-function irParaS2(){dados.projeto=gv("in_projeto");dados.cidade=gv("in_cidade");dados.estaca=gv("in_estaca");dados.data=gv("in_dia")+"/"+gv("in_mes")+"/"+gv("in_ano");dados.hora=gv("in_hora")+":"+gv("in_min");irPara("s2");}
 function onTipoChange(){
-  var t=document.getElementById("in_tipo").value,circ=["Hélice Contínua","Raiz","Trado Mecanizado","Tubulão"];
-  show("bloco_circ",circ.indexOf(t)>=0);show("bloco_met",t==="Metálica");show("bloco_tri",t==="Trilho");show("bloco_pre",t==="Pré-Moldada de Concreto");
-}
-function irParaGolpes(){
-  dados.tipo=document.getElementById("in_tipo").value;
-  dados.comp=gv("in_comp");
-  dados.carga=gv("in_carga");
-  dados.cens=gv("in_cens");
-  golpes=[];atualizaCtr();irPara("s3");
+  var t=gv("in_tipo");
+  show("bloco_circ",t==="Hélice Contínua"||t==="Trado Mecanizado"||t==="Tubulão");
+  show("bloco_met",t==="Metálica");
+  show("bloco_tri",t==="Trilho");
+  show("bloco_pre",t==="Pré-Moldada de Concreto");
 }
 function calcCirc(){
-  var d=parseFloat(gv("in_diam").replace(",",".")),b=document.getElementById("bdg_circ");
-  if(d>0){b.style.display="flex";b.innerHTML="<b>Área: "+(Math.PI*d/2*d/2).toFixed(2)+" cm²</b> &nbsp;·&nbsp; <b>Per.: "+(Math.PI*d).toFixed(2)+" cm</b>";}
-  else b.style.display="none";
+  var d=parseFloat(gv("in_diam"))||0;
+  if(d>0){
+    var r=d/2,a=Math.PI*r*r,p=Math.PI*d;
+    document.getElementById("bdg_circ").innerHTML="<b>Área:</b> "+a.toFixed(2)+" cm² | <b>Perímetro:</b> "+p.toFixed(2)+" cm";
+    show("bdg_circ",true);
+  }else show("bdg_circ",false);
 }
 function calcEnsaio(){
-  var c=parseFloat(gv("in_carga").replace(",","."));
+  var c=parseFloat(gv("in_carga"))||0;
   if(c>0)sv("in_cens",(c*2).toFixed(2));
 }
-function atualizaCtr(){document.getElementById("golpe_ctr").textContent="Passo 3 de 4 · Golpe "+(golpes.length+1);}
-
 function getDims(){
-  var t=dados.tipo,o={};
-  if(["Hélice Contínua","Raiz","Trado Mecanizado","Tubulão"].indexOf(t)>=0){
-    var d=gv("in_diam");if(d){o["Diametro [cm]"]=d;o["Area [cm2]"]=(Math.PI*(+d/2)*(+d/2)).toFixed(2);o["Perimetro [cm]"]=(Math.PI*+d).toFixed(2);}
-  } else if(t==="Metálica"){
-    if(selMet)o["Perfil"]=selMet.nome;
-    [["m_d","d [mm]"],["m_bf","bf [mm]"],["m_tw","tw [mm]"],["m_tf","tf [mm]"],["m_h","h [mm]"],["m_massa","Massa Linear [kg/m]"],["m_area","Area [cm2]"],["m_perim","Perimetro [cm]"]].forEach(function(f){var v=gv(f[0]);if(v)o[f[1]]=v;});
-  } else if(t==="Trilho"){
-    if(selTri)o["Trilho"]=selTri.nome;
-    [["t_area","Area [cm2]"],["t_perim","Perimetro [cm]"],["t_massa","Massa Linear [kg/m]"]].forEach(function(f){var v=gv(f[0]);if(v)o[f[1]]=v;});
-  } else if(t==="Pré-Moldada de Concreto"){
-    if(selPre)o["Perfil"]=selPre.nome;
-    [["p_dext","D Externo [cm]"],["p_dint","D Interno [cm]"],["p_area","Area [cm2]"],["p_perim","Perimetro [cm]"]].forEach(function(f){var v=gv(f[0]);if(v)o[f[1]]=v;});
+  var o={};
+  var t=gv("in_tipo");
+  if(t==="Hélice Contínua"||t==="Trado Mecanizado"||t==="Tubulão"){
+    var d=gv("in_diam");if(d)o["Diametro [cm]"]=d;
+  }else if(t==="Metálica"){
+    if(selMet){Object.keys(selMet).forEach(function(k){if(k!=="nome")o[k.charAt(0).toUpperCase()+k.slice(1)]=selMet[k];});}
+    else{if(gv("m_d"))o["d [mm]"]=gv("m_d");if(gv("m_bf"))o["bf [mm]"]=gv("m_bf");if(gv("m_tw"))o["tw [mm]"]=gv("m_tw");if(gv("m_tf"))o["tf [mm]"]=gv("m_tf");if(gv("m_h"))o["h [mm]"]=gv("m_h");if(gv("m_massa"))o["Massa Linear [kg/m]"]=gv("m_massa");if(gv("m_area"))o["Area [cm2]"]=gv("m_area");if(gv("m_perim"))o["Perimetro [cm]"]=gv("m_perim");}
+  }else if(t==="Trilho"){
+    if(selTri){if(gv("t_area"))o["Area [cm2]"]=gv("t_area");if(gv("t_perim"))o["Perimetro [cm]"]=gv("t_perim");if(selTri.massa)o["Massa Linear [kg/m]"]=selTri.massa;}
+    else{if(gv("t_area"))o["Area [cm2]"]=gv("t_area");if(gv("t_perim"))o["Perimetro [cm]"]=gv("t_perim");if(gv("t_massa"))o["Massa Linear [kg/m]"]=gv("t_massa");}
+  }else if(t==="Pré-Moldada de Concreto"){
+    if(selPre){if(gv("p_dext"))o["D Externo [cm]"]=gv("p_dext");if(gv("p_dint"))o["D Interno [cm]"]=gv("p_dint");if(gv("p_area"))o["Area [cm2]"]=gv("p_area");if(gv("p_perim"))o["Perimetro [cm]"]=gv("p_perim");}
+    else{if(gv("p_dext"))o["D Externo [cm]"]=gv("p_dext");if(gv("p_dint"))o["D Interno [cm]"]=gv("p_dint");if(gv("p_area"))o["Area [cm2]"]=gv("p_area");if(gv("p_perim"))o["Perimetro [cm]"]=gv("p_perim");}
   }
   return o;
 }
-
+function irPara(s){document.querySelectorAll(".screen").forEach(function(e){e.classList.remove("active");});document.getElementById(s).classList.add("active");}
+function irParaS2(){
+  if(!gv("in_projeto")){toast("Preencha o nome do projeto","#E24B4A");return;}
+  dados.projeto=gv("in_projeto");dados.cidade=gv("in_cidade");dados.estaca=gv("in_estaca");
+  dados.data=[gv("in_dia"),gv("in_mes"),gv("in_ano")].join("/");
+  dados.hora=[gv("in_hora"),gv("in_min")].join(":");
+  dados.tipo=gv("in_tipo");
+  dados.comp=gv("in_comp");dados.carga=gv("in_carga");dados.cens=gv("in_cens");
+  irPara("s2");
+}
+function irParaGolpes(){
+  if(!gv("in_comp")){toast("Preencha o comprimento útil","#E24B4A");return;}
+  irPara("s3");
+}
+function abrirLista(t){
+  var l="list_"+t,s="srch_"+t;
+  document.getElementById(l).style.display="block";
+  document.getElementById(s).focus();
+}
+function filtrarLista(t){
+  var s=gv("srch_"+t).toLowerCase(),l="list_"+t,d=t==="met"?MET:t==="tri"?TRI:PRE;
+  var html="";
+  d.forEach(function(item){
+    if(item.nome.toLowerCase().includes(s)){
+      html+="<div class=\"picker-item\" onclick=\"selecionarItem('"+t+"','"+item.nome.replace(/'/g,"\\'")+"')\">"+item.nome+"</div>";
+    }
+  });
+  document.getElementById(l).innerHTML=html||"<div style=\"padding:10px;text-align:center;color:#aaa\">Nenhum resultado</div>";
+}
+function selecionarItem(t,n){
+  var d=t==="met"?MET:t==="tri"?TRI:PRE;
+  var item=d.find(function(x){return x.nome===n;});
+  if(t==="met"){selMet=item;document.getElementById("sel_met_nome").textContent=n;show("sel_met_nome",true);show("list_met",false);sv("srch_met","");}
+  else if(t==="tri"){selTri=item;document.getElementById("sel_tri_nome").textContent=n;show("sel_tri_nome",true);show("list_tri",false);sv("srch_tri","");}
+  else{selPre=item;document.getElementById("sel_pre_nome").textContent=n;show("sel_pre_nome",true);show("list_pre",false);sv("srch_pre","");}
+}
+function atualizaCtr(){
+  document.getElementById("golpe_ctr").textContent="Passo 3 de 4 · Golpe "+( golpes.length+1);
+}
 function addGolpe(){
-  var g=Object.assign({"Projeto":dados.projeto,"Cidade":dados.cidade,"Estaca":dados.estaca,"Tipo Estaca":dados.tipo,"Data":dados.data,"Hora":dados.hora,"Comprimento Util [m]":dados.comp,"Carga de Trabalho [tf]":dados.carga,"Carga de Ensaio [tf]":dados.cens,"Altura de Queda [cm]":gv("in_alt"),"Nega [mm]":gv("in_nega"),"EMX [tn.m]":gv("in_emx"),"RMX [tn]":gv("in_rmx"),"DMX [mm]":gv("in_dmx")},getDims());
+  var g=Object.assign({"Projeto":dados.projeto,"Cidade":dados.cidade,"Estaca":dados.estaca,"Tipo Estaca":dados.tipo,"Data":dados.data,"Hora":dados.hora,"Comprimento Util [m]":dados.comp,"Carga de Trabalho [tf]":dados.carga,"Carga de Ensaio [tf]":dados.cens,"Altura de Queda [cm]":gv("in_alt"),"Nega [mm]":gv("in_nega"),"EMX [tn.m]":gv("in_emx"),"RMX [tn]":gv("in_rmx"),"DMX [mm]":gv("in_dmx"),"BTA [%]":gv("in_bta")},getDims());
   golpes.push(g);
-  ["in_alt","in_nega","in_emx","in_rmx","in_dmx"].forEach(function(id){sv(id,"");});
+  ["in_alt","in_nega","in_emx","in_rmx","in_dmx","in_bta"].forEach(function(id){sv(id,"");});
   atualizaCtr();toast("Golpe "+golpes.length+" adicionado","#1A6FC4");
 }
 
@@ -381,7 +361,7 @@ function expPDF(){
   if(dados.cens)fixos.push("Carga de Ensaio: "+dados.cens+" tf");
   if(fixos.length){doc.setTextColor(60,60,60);doc.setFontSize(8);doc.text(fixos.join("   "),14,dp.length?31:26);}
   var startY=(dp.length&&fixos.length)?36:(dp.length||fixos.length)?31:23;
-  var cm=[["#","#"],["Altura de Queda [cm]","Altura\nde Queda (cm)"],["Nega [mm]","Nega\n(mm)"],["EMX [tn.m]","EMX\n(tn.m)"],["RMX [tn]","RMX\n(tn)"],["DMX [mm]","DMX\n(mm)"]];
+  var cm=[["#","#"],["Altura de Queda [cm]","Altura\nde Queda (cm)"],["Nega [mm]","Nega\n(mm)"],["EMX [tn.m]","EMX\n(tn.m)"],["RMX [tn]","RMX\n(tn)"],["DMX [mm]","DMX\n(mm)"],["BTA [%]","BTA\n(%)"]];
   var head=[cm.map(function(c){return c[1];})];
   var body=golpes.map(function(g,i){return cm.map(function(c){return c[0]==="#"?String(i+1):String(g[c[0]]||"");});});
   doc.autoTable({head:head,body:body,startY:startY,styles:{fontSize:8,cellPadding:2,halign:"center",valign:"middle"},headStyles:{fillColor:[26,111,196],textColor:255,fontStyle:"bold",halign:"center"},alternateRowStyles:{fillColor:[240,250,245]},margin:{left:14,right:14},didDrawPage:function(){var pg=doc.internal.getCurrentPageInfo().pageNumber,tot=doc.internal.getNumberOfPages();doc.setFontSize(7);doc.setTextColor(150,150,150);doc.text("Pagina "+pg+"/"+tot+"  |  "+new Date().toLocaleString("pt-BR"),W/2,doc.internal.pageSize.getHeight()-4,{align:"center"});}});
@@ -390,7 +370,7 @@ function expPDF(){
 
 function novoReg(){
   golpes=[];dados={};selMet=null;selTri=null;selPre=null;
-  ["in_projeto","in_cidade","in_estaca","in_comp","in_carga","in_cens","in_alt","in_nega","in_emx","in_rmx","in_dmx","in_diam","srch_met","srch_tri","srch_pre","m_d","m_bf","m_tw","m_tf","m_h","m_massa","m_area","m_perim","t_area","t_perim","t_massa","p_dext","p_dint","p_area","p_perim"].forEach(function(id){sv(id,"");});
+  ["in_projeto","in_cidade","in_estaca","in_comp","in_carga","in_cens","in_alt","in_nega","in_emx","in_rmx","in_dmx","in_bta","in_diam","srch_met","srch_tri","srch_pre","m_d","m_bf","m_tw","m_tf","m_h","m_massa","m_area","m_perim","t_area","t_perim","t_massa","p_dext","p_dint","p_area","p_perim"].forEach(function(id){sv(id,"");});
   ["bdg_met","bdg_tri","bdg_pre","bdg_circ","sel_met_nome","sel_tri_nome","sel_pre_nome"].forEach(function(id){show(id,false);});
   irPara("s1");
 }
