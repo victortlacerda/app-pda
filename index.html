@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="PDA App">
 <meta name="theme-color" content="#1A6FC4">
-<title>Registro Método CASE - PDA</title>
+<title>Registro PDA</title>
 <link rel="manifest" id="manifest-placeholder">
 <link rel="apple-touch-icon" href="https://victortlacerda.github.io/app-pda/icone.png">
 <link rel="icon" type="image/png" href="https://victortlacerda.github.io/app-pda/icone.png">
@@ -171,16 +171,7 @@ input:focus,select:focus{outline:none;border-color:#1A6FC4;background:#fff}
       <div><label>EMX (tn.m)</label><input type="text" inputmode="decimal" id="in_emx"></div>
       <div><label>RMX (tn)</label><input type="text" inputmode="decimal" id="in_rmx"></div>
     </div>
-    <div class="row">
-  <div>
-    <label>DMX (mm)</label>
-    <input type="text" inputmode="decimal" id="in_dmx">
-  </div>
-  <div>
-    <label>BTA</label>
-    <input type="text" inputmode="decimal" id="in_bta">
-  </div>
-</div>
+    <label>DMX (mm)</label><input type="text" inputmode="decimal" id="in_dmx">
     <div style="display:flex;gap:8px;margin-top:14px">
       <button class="btn btn-secondary" onclick="irPara('s2')" style="flex:1;margin-top:0">← Voltar</button>
       <button class="btn btn-primary" onclick="addGolpe()" style="flex:2;margin-top:0">+ Adicionar golpe</button>
@@ -199,7 +190,9 @@ input:focus,select:focus{outline:none;border-color:#1A6FC4;background:#fff}
     <div id="res_dados"></div>
     <div style="margin:1rem 0 .5rem;font-size:13px;font-weight:600;color:#888">Golpes registrados</div>
     <div id="res_golpes"></div>
-    <div style="display:flex;gap:8px;margin-top:4px">
+    <label style="margin-top:1rem">Observações</label>
+    <textarea id="in_obs" rows="3" style="width:100%;font-size:15px;padding:10px 12px;border:1px solid #ddd;border-radius:10px;background:#f9f9f7;color:#111;resize:vertical;font-family:inherit" placeholder="Observações gerais sobre o serviço..."></textarea>
+    <div style="display:flex;gap:8px;margin-top:12px">
       <button class="btn btn-excel" onclick="expXLSX()" style="flex:1;margin-top:0">⬇ Excel</button>
       <button class="btn btn-pdf" onclick="expPDF()" style="flex:1;margin-top:0">⬇ PDF</button>
     </div>
@@ -337,11 +330,9 @@ function getDims(){
 }
 
 function addGolpe(){
-  var g=Object.assign({"Projeto":dados.projeto,"Cidade":dados.cidade,"Estaca":dados.estaca,"Tipo Estaca":dados.tipo,"Data":dados.data,"Hora":dados.hora,"Comprimento Util [m]":dados.comp,"Carga de Trabalho [tf]":dados.carga,"Carga de Ensaio [tf]":dados.cens,"Altura de Queda [cm]":gv("in_alt"),"Nega [mm]":gv("in_nega"),"EMX [tn.m]":gv("in_emx"),"RMX [tn]":gv("in_rmx"),
-"DMX [mm]":gv("in_dmx"),
-"BTA":gv("in_bta")},getDims());
+  var g=Object.assign({"Projeto":dados.projeto,"Cidade":dados.cidade,"Estaca":dados.estaca,"Tipo Estaca":dados.tipo,"Data":dados.data,"Hora":dados.hora,"Comp. Util [m]":dados.comp,"Carga Trab. [tf]":dados.carga,"Carga Ensaio [tf]":dados.cens,"Alt. Queda [cm]":gv("in_alt"),"Nega [mm]":gv("in_nega"),"EMX [tn.m]":gv("in_emx"),"RMX [tn]":gv("in_rmx"),"DMX [mm]":gv("in_dmx")},getDims());
   golpes.push(g);
-  ["in_alt","in_nega","in_emx","in_rmx","in_dmx","in_bta"].forEach(function(id){sv(id,"");});
+  ["in_alt","in_nega","in_emx","in_rmx","in_dmx"].forEach(function(id){sv(id,"");});
   atualizaCtr();toast("Golpe "+golpes.length+" adicionado","#1A6FC4");
 }
 
@@ -349,17 +340,10 @@ function irParaResumo(){
   if(!golpes.length){toast("Adicione pelo menos um golpe","#E24B4A");return;}
   document.getElementById("res_titulo").textContent=(dados.projeto||"Sem nome")+" · "+(dados.estaca||"Sem estaca");
   document.getElementById("res_sub").textContent=golpes.length+" golpe(s) · "+(dados.cidade?dados.cidade+" · ":"")+dados.data+" "+dados.hora;
-  var rows=[["Projeto",dados.projeto||"—"],["Cidade",dados.cidade||"—"],["Estaca",dados.estaca||"—"],["Tipo",dados.tipo],["Comprimento Útil",dados.comp?(dados.comp+" m"):"—"],["Carga de Trabalho",dados.carga?(dados.carga+" tf"):"—"],["Carga de Ensaio",dados.cens?(dados.cens+" tf"):"—"],["Data",dados.data],["Hora",dados.hora]];
+  var rows=[["Projeto",dados.projeto||"—"],["Cidade",dados.cidade||"—"],["Estaca",dados.estaca||"—"],["Tipo",dados.tipo],["Comp. Útil",dados.comp?(dados.comp+" m"):"—"],["Carga Trab.",dados.carga?(dados.carga+" tf"):"—"],["Carga Ensaio",dados.cens?(dados.cens+" tf"):"—"],["Data",dados.data],["Hora",dados.hora]];
   document.getElementById("res_dados").innerHTML="<div class=\"card\" style=\"margin-bottom:.75rem\">"+rows.map(function(r){return"<div class=\"sum-row\"><span class=\"sum-lbl\">"+r[0]+"</span><span class=\"sum-val\">"+r[1]+"</span></div>";}).join("")+"</div>";
   document.getElementById("res_golpes").innerHTML=golpes.map(function(g,i){
-    var info=[
-  g["Altura de Queda [cm]"] ? "Alt: "+g["Altura de Queda [cm]"]+"cm" : "",
-  g["Nega [mm]"] ? "Nega: "+g["Nega [mm]"]+"mm" : "",
-  g["EMX [tn.m]"] ? "EMX: "+g["EMX [tn.m]"] : "",
-  g["RMX [tn]"] ? "RMX: "+g["RMX [tn]"] : "",
-  g["DMX [mm]"] ? "DMX: "+g["DMX [mm]"]+"mm" : "",
-  g["BTA"] ? "BTA: "+g["BTA"] : ""
-].filter(Boolean).join(" · ") || "—";
+    var info=[g["Alt. Queda [cm]"]?"Alt: "+g["Alt. Queda [cm]"]+"cm":"",g["Nega [mm]"]?"Nega: "+g["Nega [mm]"]+"mm":"",g["EMX [tn.m]"]?"EMX: "+g["EMX [tn.m]"]:""].filter(Boolean).join(" · ")||"—";
     return"<div class=\"golpe-item\"><div><div class=\"golpe-num\">Golpe "+(i+1)+"</div><div class=\"golpe-info\">"+info+"</div></div><button class=\"del-btn\" onclick=\"remGolpe("+i+")\">✕</button></div>";
   }).join("");
   irPara("s4");
@@ -370,9 +354,14 @@ function nomeArq(ext){return(dados.projeto||"projeto")+"_"+(dados.estaca||"estac
 function expXLSX(){
   if(!golpes.length){toast("Sem golpes","#E24B4A");return;}
   if(typeof XLSX==="undefined"){toast("Biblioteca Excel não carregada. Verifique conexão.","#E24B4A");return;}
+  var obs=document.getElementById("in_obs").value;
   var ws=XLSX.utils.json_to_sheet(golpes),wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,"Golpes");
   ws["!cols"]=Object.keys(golpes[0]).map(function(k){return{wch:Math.max(k.length,Math.max.apply(null,golpes.map(function(g){return String(g[k]||"").length;})))+2};});
+  if(obs){
+    var nextRow=golpes.length+3;
+    XLSX.utils.sheet_add_aoa(ws,[["Observações:"],[obs]],{origin:"A"+nextRow});
+  }
   XLSX.writeFile(wb,nomeArq("xlsx"));toast("Excel salvo!","#217346");
 }
 
@@ -384,7 +373,7 @@ function expPDF(){
   var W=doc.internal.pageSize.getWidth();
   doc.setFillColor(26,111,196);doc.rect(0,0,W,20,"F");
   doc.setTextColor(255,255,255);doc.setFontSize(13);doc.setFont("helvetica","bold");
-  doc.text("REGISTRO DE CAMPO MÉTODO CASE - PDA",W/2,8,{align:"center"});
+  doc.text("REGISTRO DE CRAVACAO DE ESTACAS - PDA",W/2,8,{align:"center"});
   doc.setFontSize(9);doc.setFont("helvetica","normal");
   var l2=[(dados.projeto||"—"),(dados.cidade?"| "+dados.cidade:""),"| Estaca: "+(dados.estaca||"—"),"| "+dados.tipo,"| "+dados.data+" "+dados.hora].filter(Boolean).join(" ");
   doc.text(l2,W/2,14,{align:"center"});
@@ -394,29 +383,30 @@ function expPDF(){
   if(dp.length){doc.setTextColor(60,60,60);doc.setFontSize(8);doc.setFont("helvetica","normal");doc.text(dp.join("   "),14,26);}
   // linha extra com dados fixos da estaca
   var fixos=[];
-  if(dados.comp)fixos.push("Comprimento Útil: "+dados.comp+" m");
-  if(dados.carga)fixos.push("Carga de Trabalho: "+dados.carga+" tf");
-  if(dados.cens)fixos.push("Carga de Ensaio: "+dados.cens+" tf");
+  if(dados.comp)fixos.push("Comp. Útil: "+dados.comp+" m");
+  if(dados.carga)fixos.push("Carga Trab.: "+dados.carga+" tf");
+  if(dados.cens)fixos.push("Carga Ensaio: "+dados.cens+" tf");
   if(fixos.length){doc.setTextColor(60,60,60);doc.setFontSize(8);doc.text(fixos.join("   "),14,dp.length?31:26);}
   var startY=(dp.length&&fixos.length)?36:(dp.length||fixos.length)?31:23;
-  var cm=[
-  ["#","#"],
-  ["Altura de Queda [cm]","Altura\nde Queda (cm)"],
-  ["Nega [mm]","Nega\n(mm)"],
-  ["EMX [tn.m]","EMX\n(tn.m)"],
-  ["RMX [tn]","RMX\n(tn)"],
-  ["DMX [mm]","DMX\n(mm)"],
-  ["BTA","BTA"]
-];
+  var cm=[["#","#"],["Alt. Queda [cm]","Alt.\nQueda (cm)"],["Nega [mm]","Nega\n(mm)"],["EMX [tn.m]","EMX\n(tn.m)"],["RMX [tn]","RMX\n(tn)"],["DMX [mm]","DMX\n(mm)"]];
   var head=[cm.map(function(c){return c[1];})];
   var body=golpes.map(function(g,i){return cm.map(function(c){return c[0]==="#"?String(i+1):String(g[c[0]]||"");});});
   doc.autoTable({head:head,body:body,startY:startY,styles:{fontSize:8,cellPadding:2,halign:"center",valign:"middle"},headStyles:{fillColor:[26,111,196],textColor:255,fontStyle:"bold",halign:"center"},alternateRowStyles:{fillColor:[240,250,245]},margin:{left:14,right:14},didDrawPage:function(){var pg=doc.internal.getCurrentPageInfo().pageNumber,tot=doc.internal.getNumberOfPages();doc.setFontSize(7);doc.setTextColor(150,150,150);doc.text("Pagina "+pg+"/"+tot+"  |  "+new Date().toLocaleString("pt-BR"),W/2,doc.internal.pageSize.getHeight()-4,{align:"center"});}});
+  var obs=document.getElementById("in_obs").value.trim();
+  if(obs){
+    var finalY=doc.lastAutoTable.finalY+6;
+    doc.setFontSize(8);doc.setFont("helvetica","bold");doc.setTextColor(60,60,60);
+    doc.text("Observações:",14,finalY);
+    doc.setFont("helvetica","normal");
+    var linhas=doc.splitTextToSize(obs,W-28);
+    doc.text(linhas,14,finalY+5);
+  }
   doc.save(nomeArq("pdf"));toast("PDF salvo!","#C0392B");
 }
 
 function novoReg(){
   golpes=[];dados={};selMet=null;selTri=null;selPre=null;
-  ["in_projeto","in_cidade","in_estaca","in_comp","in_carga","in_cens","in_alt","in_nega","in_emx","in_rmx","in_dmx","in_diam","srch_met","srch_tri","srch_pre","m_d","m_bf","m_tw","m_tf","m_h","m_massa","m_area","m_perim","t_area","t_perim","t_massa","p_dext","p_dint","p_area","p_perim"].forEach(function(id){sv(id,"");});
+  ["in_projeto","in_cidade","in_estaca","in_comp","in_carga","in_cens","in_alt","in_nega","in_emx","in_rmx","in_dmx","in_diam","srch_met","srch_tri","srch_pre","m_d","m_bf","m_tw","m_tf","m_h","m_massa","m_area","m_perim","t_area","t_perim","t_massa","p_dext","p_dint","p_area","p_perim","in_obs"].forEach(function(id){sv(id,"");});
   ["bdg_met","bdg_tri","bdg_pre","bdg_circ","sel_met_nome","sel_tri_nome","sel_pre_nome"].forEach(function(id){show(id,false);});
   irPara("s1");
 }
